@@ -63303,10 +63303,12 @@ module.exports = require("zlib");
 
 
 const request = __webpack_require__(303)
+// usefull for debugging the konnector
+// require('request-debug')(request)
 const moment = __webpack_require__(0)
 const uuid = __webpack_require__(86)
-const {baseKonnector,cozyClient, models, log, updateOrCreate} = __webpack_require__(90);
-const imp = __webpack_require__(323);
+const {baseKonnector, cozyClient, log, updateOrCreate} = __webpack_require__(90)
+const imp = __webpack_require__(323)
 const MaifUser = imp.doctypeTest
 
 const connectUrl = 'https://connect.maif.fr/connect'
@@ -63331,7 +63333,7 @@ if (nonce === '') {
   nonce = uuid()
 }
 
-const connector = module.exports = baseKonnector.createNew({
+module.exports = baseKonnector.createNew({
   name: 'MAIF',
   customView: '<%t konnector customview maif %>',
   connectUrl: `${connectUrl}/authorize?response_type=${type}&client_id=${clientId}&scope=${scope}&state=${state}&nonce=${nonce}&redirect_uri=`,
@@ -63365,7 +63367,6 @@ const connector = module.exports = baseKonnector.createNew({
     updateOrCreate(null, MaifUser)
   ]
 })
-
 
 function refreshToken (requiredFields, entries, data, next) {
   log('info', 'refreshToken')
@@ -63436,7 +63437,6 @@ function buildCallbackUrl (requiredFields, callback) {
     url = `${domain}apps/konnectors/${path}`
   } catch (e) {
     log('error', e)
-    console.log(e)
     error = 'internal error'
   }
   callback(error, url)
@@ -63475,7 +63475,7 @@ function fetchData (requiredFields, entries, data, next) {
     }
   }, (err, response, body) => {
     if (response.statusCode !== 200 && response.statusCode !== '200') {
-      connector.logger.error(`fetchToken error: ${response.statusCode} - ${response.statusMessage}`)
+      log('error', `fetchToken error: ${response.statusCode} - ${response.statusMessage}`)
       err = 'request error'
     }
 
@@ -63505,6 +63505,7 @@ function createOrUpdateInDB (requiredFields, entries, data, next) {
   })
 }
 */
+
 
 /***/ }),
 /* 322 */
@@ -63689,6 +63690,7 @@ const doctypeSocietaire = models.baseModel.createNew({
 const doctypeTest = models.baseModel.createNew({
   docType: "fr.maif.maifuser.societaire",
   displayName:'maifuser',
+  name:"fr.maif.maifuser.societaire",
   maifuser:{}
 });
 
