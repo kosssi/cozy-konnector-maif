@@ -9475,9 +9475,9 @@ var PrivateKey = __webpack_require__(14);
 var Identity = __webpack_require__(64);
 
 var formats = {};
-formats['openssh'] = __webpack_require__(567);
+formats['openssh'] = __webpack_require__(569);
 formats['x509'] = __webpack_require__(310);
-formats['pem'] = __webpack_require__(568);
+formats['pem'] = __webpack_require__(570);
 
 var CertificateParseError = errs.CertificateParseError;
 var InvalidAlgorithmError = errs.InvalidAlgorithmError;
@@ -22513,8 +22513,8 @@ nacl.setPRNG = function(fn) {
 /* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var v1 = __webpack_require__(574);
-var v4 = __webpack_require__(575);
+var v1 = __webpack_require__(576);
+var v4 = __webpack_require__(577);
 
 var uuid = v4;
 uuid.v1 = v1;
@@ -30792,7 +30792,7 @@ webpackEmptyContext.id = 169;
 /* 170 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const ware = __webpack_require__(577)
+const ware = __webpack_require__(579)
 
 // Class to handle the layer of the fetching operation. Basically it runs a set
 // of function and make sure they all share the same parameters.
@@ -61044,8 +61044,8 @@ module.exports = {
 "use strict";
 
 
-var stringify = __webpack_require__(555);
-var parse = __webpack_require__(554);
+var stringify = __webpack_require__(557);
+var parse = __webpack_require__(556);
 var formats = __webpack_require__(300);
 
 module.exports = {
@@ -61392,7 +61392,7 @@ request.forever = function (agentOptions, optionsArg) {
 // Exports
 
 module.exports = request
-request.Request = __webpack_require__(565)
+request.Request = __webpack_require__(567)
 request.initParams = initParams
 
 // Backwards compatibility for request.debug
@@ -61414,7 +61414,7 @@ Object.defineProperty(request, 'debug', {
 "use strict";
 
 
-var tough = __webpack_require__(570)
+var tough = __webpack_require__(572)
 
 var Cookie = tough.Cookie
   , CookieJar = tough.CookieJar
@@ -61457,7 +61457,7 @@ exports.jar = function(store) {
 /* 305 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(566);
+module.exports = __webpack_require__(568);
 
 /***/ }),
 /* 306 */
@@ -63307,9 +63307,15 @@ const request = __webpack_require__(303)
 // require('request-debug')(request)
 const moment = __webpack_require__(0)
 const uuid = __webpack_require__(86)
-const {baseKonnector, cozyClient, log, updateOrCreate} = __webpack_require__(90)
+const {baseKonnector, cozyClient, log, updateOrCreate, models} = __webpack_require__(90)
 const imp = __webpack_require__(323)
-const MaifUser = imp.doctypeTest
+const Contrat = imp.doctypeContrat
+const Home = imp.doctypeHome
+const Foyer = imp.doctypeFoyer
+const ModalitesPaiement = imp.doctypeModalitesPaiement
+const SinistreHabitation = imp.doctypeSinistreHabitation
+const SinistreVehicule = imp.doctypeSinistreVehicule
+const Societaire = imp.doctypeSocietaire
 
 const connectUrl = 'https://connect.maif.fr/connect'
 const apikey = 'eeafd0bd-a921-420e-91ce-3b52ee5807e8'
@@ -63322,6 +63328,12 @@ const domain = cozyClient.cozyURL
 const scope = 'openid+profile+offline_access'
 const type = 'code'
 const b64Client = new Buffer(`${clientId}:${secret}`).toString('base64')
+
+const logger = __webpack_require__(555)({
+  prefix: 'Maif',
+  date: true
+})
+
 let state = ''
 let nonce = ''
 
@@ -63357,14 +63369,20 @@ module.exports = baseKonnector.createNew({
 
   dataType: [
     'bill',
-    'contact'
+    'contact',
   ],
 
-  models: [MaifUser],
+  models: [Contrat,Home,Foyer,ModalitesPaiement,SinistreHabitation,SinistreVehicule,Societaire],
   fetchOperations: [
     refreshToken,
     fetchData,
-    updateOrCreate(null, MaifUser)
+    updateOrCreate(logger, Contrat),
+    updateOrCreate(logger, Home),
+    updateOrCreate(logger, Foyer),
+    updateOrCreate(logger, ModalitesPaiement),
+    updateOrCreate(logger, SinistreHabitation),
+    updateOrCreate(logger, SinistreVehicule),
+    updateOrCreate(logger, Societaire)
   ]
 })
 
@@ -63442,28 +63460,6 @@ function buildCallbackUrl (requiredFields, callback) {
   callback(error, url)
 }
 
-/*
-// Save konnector's fieldValues during fetch process.
-function saveTokenInKonnector (requiredFields, entries, data, next) {
-  log('info', 'saveTokenInKonnector')
-
-  // Disable eslint because we can't require models/konnector at the top
-  // of this file (or Konnector will be empty). It's because in the require
-  // tree of models/konnector, there is the current file.
-  //eslint-disable-next-line
-  const Konnector = require('../models/konnector')
-
-  Konnector.get(connector.slug, (err, konnector) => {
-    if (err) {
-      log('error', err)
-      return next('internal error')
-    }
-
-    konnector.updateFieldValues({ accounts: [requiredFields] }, next)
-  })
-}
-*/
-
 function fetchData (requiredFields, entries, data, next) {
   log('info', 'fetchData')
 
@@ -63483,13 +63479,68 @@ function fetchData (requiredFields, entries, data, next) {
       return next(err)
     }
     moment.locale('fr')
-    entries.maifusers = [{
-      profile: body,
-      date: moment().format('LLL')
-    }]
+
+    // Il est nécessaire de mettre un s à l'objet maifuser ==> Voir fonction updateOrCreate (ajout d'un s au displayName.toLowerCase pour retrouver l'entrie)
+
+    // Ajout data MaifUser
+    // entries.maifusers = []
+    // entries.maifusers.push({'maifuser':body})
+
+    // Ajout data Contrat
+    entries.contrats = []
+    entries.contrats.push({'contrat':body["MesInfos"].contract})
+
+    // Ajout data Home
+    entries.homes = []
+    entries.homes.push({'home':body["MesInfos"].home})
+
+    // Ajout data Foyer
+    entries.foyers = []
+    entries.foyers.push({'foyer':body["MesInfos"].foyer})
+
+    // Ajout data ModalitesPaiement
+    entries.paymenttermss = []
+    entries.paymenttermss.push({'paymentterms':body["MesInfos"].paymentTerms})
+
+    // Ajout data SinistreHabitation & SinistreVehicule
+    var sinistres = body["MesInfos"].insuranceClaim
+    sinistres=sortByDate(sinistres)
+    entries.sinistrevehicules = []
+    entries.sinistrehabitations = []
+    var sinistrevehicules = []
+    var sinistrehabitations = []
+
+
+    // Parcours des sinistres
+    for(var i=0;i<sinistres.length; i++){
+      // Si immatriculationVehicule ==> sinistre VAM
+      if (sinistres[i]["immatriculationVehicule"] != undefined && sinistres[i]["immatriculationVehicule"] != ""){
+        sinistrevehicules.push(sinistres[i])
+      // Sinon ==> sinistre RAQVAM
+      } else {
+        sinistrehabitations.push(sinistres[i])
+      }
+    }
+
+    entries.sinistrevehicules.push({'sinistrevehicules':sinistrevehicules})
+    entries.sinistrehabitations.push({'sinistrehabitations':sinistrehabitations})
+
+    // Ajout data Societaire
+    entries.societaires = []
+    entries.societaires.push({'societaire':body["MesInfos"].client})
+
     next()
   })
 }
+
+function 	sortByDate(data){
+		data.sort(function(a, b) {
+			a = new Date(a.horodatage).getTime();
+			b = new Date(b.horodatage).getTime();
+	      return a>b ? -1 : a<b ? 1 : 0;
+	  });
+		return data;
+	}
 
 /*
 function createOrUpdateInDB (requiredFields, entries, data, next) {
@@ -63687,20 +63738,18 @@ const doctypeSocietaire = models.baseModel.createNew({
   "referenceClient":"1234567"
 });
 
-const doctypeTest = models.baseModel.createNew({
-  docType: "fr.maif.maifuser.societaire",
+const doctypeMaifUser = models.baseModel.createNew({
   displayName:'maifuser',
-  name:"fr.maif.maifuser.societaire",
-  maifuser:{}
+  name:"fr.maif.maifuser.maifuser"
 });
 
-doctypeTest.getOne = callback =>
-    doctypeTest.all(function(err, maifusers) {
+doctypeMaifUser.getOne = callback =>
+    doctypeMaifUser.all(function(err, maifusers) {
         let error = err || maifusers.error;
         return callback(error, maifusers[0]);
 })
 
-module.exports = {doctypeContrat, doctypeHome, doctypeFoyer, doctypeModalitesPaiement, doctypeSinistreHabitation, doctypeSinistreVehicule, doctypeSocietaire, doctypeTest}
+module.exports = {doctypeMaifUser, doctypeContrat, doctypeHome, doctypeFoyer, doctypeModalitesPaiement, doctypeSinistreHabitation, doctypeSinistreVehicule, doctypeSocietaire}
 
 /*const cozy_konnector_libs = require('cozy-konnector-libs');
 const instance = cozy_konnector_libs.cozyclient;
@@ -73249,7 +73298,7 @@ $export($export.G + $export.B + $export.F * MSIE, {
 /* 88 */
 /***/ function(module, exports) {
 
-	module.exports = __webpack_require__(556);
+	module.exports = __webpack_require__(558);
 
 /***/ },
 /* 89 */
@@ -77077,7 +77126,7 @@ function localstorage() {
  * Module dependencies.
  */
 
-var tty = __webpack_require__(583);
+var tty = __webpack_require__(585);
 var util = __webpack_require__(3);
 
 /**
@@ -90195,7 +90244,7 @@ var mod_assert = __webpack_require__(5);
 var mod_util = __webpack_require__(3);
 
 var mod_extsprintf = __webpack_require__(178);
-var mod_verror = __webpack_require__(576);
+var mod_verror = __webpack_require__(578);
 var mod_jsonschema = __webpack_require__(539);
 
 /*
@@ -100645,6 +100694,276 @@ exports.generateBase = generateBase
 
 /***/ }),
 /* 554 */
+/***/ (function(module, exports) {
+
+/*
+* @version  0.5.0
+* @author   Lauri Rooden - https://github.com/litejs/date-format-lite
+* @license  MIT License  - http://lauri.rooden.ee/mit-license.txt
+*/
+
+
+!function(Date, proto) {
+	var maskRe = /(["'])((?:[^\\]|\\.)*?)\1|YYYY|([MD])\3\3(\3?)|SS|([YMDHhmsW])(\5?)|[uUAZSwo]/g
+	, yearFirstRe = /(\d{4})[-.\/](\d\d?)[-.\/](\d\d?)/
+	, dateFirstRe = /(\d\d?)[-.\/](\d\d?)[-.\/](\d{4})/
+	, timeRe = /(\d\d?):(\d\d):?(\d\d)?\.?(\d{3})?(?:\s*(?:(a)|(p))\.?m\.?)?(\s*(?:Z|GMT|UTC)?(?:([-+]\d\d):?(\d\d)?)?)?/i
+	, wordRe = /.[a-z]+/g
+	, unescapeRe = /\\(.)/g
+
+	// ISO 8601 specifies numeric representations of date and time.
+	//
+	// The international standard date notation is
+	// YYYY-MM-DD
+	//
+	// The international standard notation for the time of day is
+	// hh:mm:ss
+	//
+	// Time zone
+	//
+	// The strings +hh:mm, +hhmm, or +hh (ahead of UTC)
+	// -hh:mm, -hhmm, or -hh (time zones west of the zero meridian, which are behind UTC)
+	//
+	// 12:00Z = 13:00+01:00 = 0700-0500
+
+	Date[proto].format = function(mask) {
+		mask = Date.masks[mask] || mask || Date.masks["default"]
+
+		var self = this
+		, get = "get" + (mask.slice(0,4) == "UTC:" ? (mask=mask.slice(4), "UTC"):"")
+
+		return mask.replace(maskRe, function(match, quote, text, MD, MD4, single, pad) {
+			text = single == "Y"   ? self[get + "FullYear"]() % 100
+				 : match == "YYYY" ? self[get + "FullYear"]()
+				 : single == "M"   ? self[get + "Month"]()+1
+				 : MD     == "M" ? Date.monthNames[ self[get + "Month"]()+(MD4 ? 12 : 0) ]
+				 : single == "D"   ? self[get + "Date"]()
+				 : MD     == "D" ? Date.dayNames[ self[get + "Day"]() + (MD4 ? 7:0 ) ]
+				 : single == "H"   ? self[get + "Hours"]() % 12 || 12
+				 : single == "h"   ? self[get + "Hours"]()
+				 : single == "m"   ? self[get + "Minutes"]()
+				 : single == "s"   ? self[get + "Seconds"]()
+				 : match == "S"    ? self[get + "Milliseconds"]()
+				 : match == "SS"   ? (quote = self[get + "Milliseconds"](), quote > 99 ? quote : (quote > 9 ? "0" : "00" ) + quote)
+				 : match == "u"    ? (self/1000)>>>0
+				 : match == "U"    ? +self
+				 : match == "A"    ? Date[self[get + "Hours"]() > 11 ? "pm" : "am"]
+				 : match == "Z"    ? "GMT " + (-self.getTimezoneOffset()/60)
+				 : match == "w"    ? self[get + "Day"]() || 7
+				 : single == "W"   ? (quote = new Date(+self + ((4 - (self[get + "Day"]()||7)) * 86400000)), Math.ceil(((quote.getTime()-quote["s" + get.slice(1) + "Month"](0,1)) / 86400000 + 1 ) / 7) )
+				 : match == "o"    ? new Date(+self + ((4 - (self[get + "Day"]()||7)) * 86400000))[get + "FullYear"]()
+				 : quote           ? text.replace(unescapeRe, "$1")
+				 : match
+			return pad && text < 10 ? "0"+text : text
+		})
+	}
+
+	Date.am = "AM"
+	Date.pm = "PM"
+
+	Date.masks = {"default":"DDD MMM DD YYYY hh:mm:ss","isoUtcDateTime":'UTC:YYYY-MM-DD"T"hh:mm:ss"Z"'}
+	Date.monthNames = "JanFebMarAprMayJunJulAugSepOctNovDecJanuaryFebruaryMarchAprilMayJuneJulyAugustSeptemberOctoberNovemberDecember".match(wordRe)
+	Date.dayNames = "SunMonTueWedThuFriSatSundayMondayTuesdayWednesdayThursdayFridaySaturday".match(wordRe)
+
+	//*/
+
+
+	/*
+	* // In Chrome Date.parse("01.02.2001") is Jan
+	* n = +self || Date.parse(self) || ""+self;
+	*/
+
+	String[proto].date = Number[proto].date = function(format) {
+		var m, temp
+		, d = new Date
+		, n = +this || ""+this
+
+		if (isNaN(n)) {
+			// Big endian date, starting with the year, eg. 2011-01-31
+			if (m = n.match(yearFirstRe)) d.setFullYear(m[1], m[2]-1, m[3])
+
+			else if (m = n.match(dateFirstRe)) {
+				// Middle endian date, starting with the month, eg. 01/31/2011
+				// Little endian date, starting with the day, eg. 31.01.2011
+				temp = Date.middle_endian ? 1 : 2
+				d.setFullYear(m[3], m[temp]-1, m[3-temp])
+			}
+
+			// Time
+			m = n.match(timeRe) || [0, 0, 0]
+			d.setHours( m[6] && m[1] < 12 ? +m[1]+12 : m[5] && m[1] == 12 ? 0 : m[1], m[2], m[3]|0, m[4]|0)
+			// Timezone
+			if (m[7]) {
+				d.setTime(d-((d.getTimezoneOffset() + (m[8]|0)*60 + ((m[8]<0?-1:1)*(m[9]|0)))*60000))
+			}
+		} else d.setTime( n < 4294967296 ? n * 1000 : n )
+		return format ? d.format(format) : d
+	}
+
+}(Date, "prototype")
+
+
+
+
+
+
+/***/ }),
+/* 555 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// Generated by CoffeeScript 1.10.0
+var Logger, colors, dateFormat, levelColors, printit,
+  slice = [].slice;
+
+dateFormat = __webpack_require__(554);
+
+printit = function(options) {
+  return new Logger(options);
+};
+
+if (printit.console == null) {
+  printit.console = global.console;
+}
+
+colors = {
+  blue: ['\x1B[34m', '\x1B[39m'],
+  cyan: ['\x1B[36m', '\x1B[39m'],
+  green: ['\x1B[32m', '\x1B[39m'],
+  magenta: ['\x1B[36m', '\x1B[39m'],
+  red: ['\x1B[31m', '\x1B[39m'],
+  yellow: ['\x1B[33m', '\x1B[39m']
+};
+
+levelColors = {
+  error: colors.red,
+  debug: colors.green,
+  warn: colors.yellow,
+  info: colors.blue
+};
+
+Logger = (function() {
+  function Logger(options1) {
+    this.options = options1;
+    if (this.options == null) {
+      this.options = {};
+    }
+    if (this.options.date && (this.options.dateFormat == null)) {
+      this.options.dateFormat = 'YYYY-MM-DD hh:mm:ss:S';
+    }
+  }
+
+  Logger.prototype.colorify = function(text, color) {
+    return "" + color[0] + text + color[1];
+  };
+
+  Logger.prototype.stringify = function(text) {
+    if (text instanceof Error && text.stack) {
+      text = text.stack;
+    } else if (text instanceof Object) {
+      text = JSON.stringify(text);
+    }
+    return text;
+  };
+
+  Logger.prototype.getFileAndLine = function() {
+    var browserReg, fileAndLineInfos, filePath, firstLineStack, line, nodeReg, stacklist;
+    stacklist = (new Error()).stack.split('\n').slice(4);
+    nodeReg = /at\s+(.*)\s+\((.*):(\d*):(\d*)\)/gi;
+    browserReg = /at\s+()(.*):(\d*):(\d*)/gi;
+    firstLineStack = stacklist[0];
+    fileAndLineInfos = nodeReg.exec(firstLineStack) || browserReg.exec(firstLineStack);
+    filePath = fileAndLineInfos[2].substr(process.cwd().length);
+    line = fileAndLineInfos[3];
+    return "." + filePath + ":" + line + " |";
+  };
+
+  Logger.prototype.format = function(level, texts) {
+    var date, text;
+    if (process.env.DEBUG) {
+      texts.unshift(this.getFileAndLine());
+    }
+    text = ((function() {
+      var i, len, results;
+      results = [];
+      for (i = 0, len = texts.length; i < len; i++) {
+        text = texts[i];
+        results.push(this.stringify(text));
+      }
+      return results;
+    }).call(this)).join(" ");
+    if (this.options.prefix != null) {
+      text = this.options.prefix + " | " + text;
+    }
+    if (process.env.NODE_ENV !== 'production') {
+      level = this.colorify(level, levelColors[level]);
+    }
+    if (level) {
+      text = level + " - " + text;
+    }
+    if (this.options.date) {
+      date = new Date().format(this.options.dateFormat);
+      text = "[" + date + "] " + text;
+    }
+    return text;
+  };
+
+  Logger.prototype.info = function() {
+    var texts;
+    texts = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    if (process.env.DEBUG || process.env.NODE_ENV !== 'test') {
+      return printit.console.info(this.format('info', texts));
+    }
+  };
+
+  Logger.prototype.warn = function() {
+    var texts;
+    texts = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    if (process.env.DEBUG || process.env.NODE_ENV !== 'test') {
+      if (this.options.duplicateToStdout) {
+        printit.console.info(this.format('warn', texts));
+      }
+      return printit.console.warn(this.format('warn', texts));
+    }
+  };
+
+  Logger.prototype.error = function() {
+    var texts;
+    texts = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    if (process.env.DEBUG || process.env.NODE_ENV !== 'test') {
+      if (this.options.duplicateToStdout) {
+        printit.console.info(this.format('error', texts));
+      }
+      return printit.console.error(this.format('error', texts));
+    }
+  };
+
+  Logger.prototype.debug = function() {
+    var texts;
+    texts = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    if (process.env.DEBUG) {
+      return printit.console.info(this.format('debug', texts));
+    }
+  };
+
+  Logger.prototype.raw = function() {
+    var ref, texts;
+    texts = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    return (ref = printit.console).log.apply(ref, texts);
+  };
+
+  Logger.prototype.lineBreak = function(text) {
+    return this.raw(Array(80).join("*"));
+  };
+
+  return Logger;
+
+})();
+
+module.exports = printit;
+
+
+/***/ }),
+/* 556 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -100818,7 +101137,7 @@ module.exports = function (str, opts) {
 
 
 /***/ }),
-/* 555 */
+/* 557 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -101032,7 +101351,7 @@ module.exports = function (object, opts) {
 
 
 /***/ }),
-/* 556 */
+/* 558 */
 /***/ (function(module, exports) {
 
 /**
@@ -101774,7 +102093,7 @@ module.exports = function (object, opts) {
 
 
 /***/ }),
-/* 557 */
+/* 559 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -101949,7 +102268,7 @@ exports.Auth = Auth
 
 
 /***/ }),
-/* 558 */
+/* 560 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -102035,7 +102354,7 @@ module.exports = getProxyFromURI
 
 
 /***/ }),
-/* 559 */
+/* 561 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -102257,7 +102576,7 @@ exports.Har = Har
 
 
 /***/ }),
-/* 560 */
+/* 562 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -102377,7 +102696,7 @@ exports.Multipart = Multipart
 
 
 /***/ }),
-/* 561 */
+/* 563 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -102532,7 +102851,7 @@ exports.OAuth = OAuth
 
 
 /***/ }),
-/* 562 */
+/* 564 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -102590,7 +102909,7 @@ exports.Querystring = Querystring
 
 
 /***/ }),
-/* 563 */
+/* 565 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -102754,14 +103073,14 @@ exports.Redirect = Redirect
 
 
 /***/ }),
-/* 564 */
+/* 566 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var url = __webpack_require__(15)
-  , tunnel = __webpack_require__(573)
+  , tunnel = __webpack_require__(575)
 
 var defaultProxyHeaderWhiteList = [
   'accept',
@@ -102937,7 +103256,7 @@ exports.Tunnel = Tunnel
 
 
 /***/ }),
-/* 565 */
+/* 567 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -102954,7 +103273,7 @@ var http = __webpack_require__(34)
   , aws4 = __webpack_require__(363)
   , httpSignature = __webpack_require__(512)
   , mime = __webpack_require__(183)
-  , stringstream = __webpack_require__(569)
+  , stringstream = __webpack_require__(571)
   , caseless = __webpack_require__(93)
   , ForeverAgent = __webpack_require__(483)
   , FormData = __webpack_require__(484)
@@ -102963,14 +103282,14 @@ var http = __webpack_require__(34)
   , isTypedArray = __webpack_require__(535).strict
   , helpers = __webpack_require__(123)
   , cookies = __webpack_require__(304)
-  , getProxyFromURI = __webpack_require__(558)
-  , Querystring = __webpack_require__(562).Querystring
-  , Har = __webpack_require__(559).Har
-  , Auth = __webpack_require__(557).Auth
-  , OAuth = __webpack_require__(561).OAuth
-  , Multipart = __webpack_require__(560).Multipart
-  , Redirect = __webpack_require__(563).Redirect
-  , Tunnel = __webpack_require__(564).Tunnel
+  , getProxyFromURI = __webpack_require__(560)
+  , Querystring = __webpack_require__(564).Querystring
+  , Har = __webpack_require__(561).Har
+  , Auth = __webpack_require__(559).Auth
+  , OAuth = __webpack_require__(563).OAuth
+  , Multipart = __webpack_require__(562).Multipart
+  , Redirect = __webpack_require__(565).Redirect
+  , Tunnel = __webpack_require__(566).Tunnel
   , now = __webpack_require__(553)
   , Buffer = __webpack_require__(60).Buffer
 
@@ -104509,13 +104828,13 @@ module.exports = Request
 
 
 /***/ }),
-/* 566 */
+/* 568 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Load modules
 
-var Dgram = __webpack_require__(580);
-var Dns = __webpack_require__(581);
+var Dgram = __webpack_require__(582);
+var Dns = __webpack_require__(583);
 var Hoek = __webpack_require__(78);
 
 
@@ -104927,7 +105246,7 @@ internals.ignore = function () {
 
 
 /***/ }),
-/* 567 */
+/* 569 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Copyright 2017 Joyent, Inc.
@@ -105255,7 +105574,7 @@ function getCertType(key) {
 
 
 /***/ }),
-/* 568 */
+/* 570 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Copyright 2016 Joyent, Inc.
@@ -105338,7 +105657,7 @@ function write(cert, options) {
 
 
 /***/ }),
-/* 569 */
+/* 571 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var util = __webpack_require__(3)
@@ -105446,7 +105765,7 @@ function alignedWrite(buffer) {
 
 
 /***/ }),
-/* 570 */
+/* 572 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -105485,9 +105804,9 @@ var net = __webpack_require__(87);
 var urlParse = __webpack_require__(15).parse;
 var pubsuffix = __webpack_require__(313);
 var Store = __webpack_require__(314).Store;
-var MemoryCookieStore = __webpack_require__(571).MemoryCookieStore;
+var MemoryCookieStore = __webpack_require__(573).MemoryCookieStore;
 var pathMatch = __webpack_require__(311).pathMatch;
-var VERSION = __webpack_require__(572).version;
+var VERSION = __webpack_require__(574).version;
 
 var punycode;
 try {
@@ -106789,7 +107108,7 @@ module.exports = {
 
 
 /***/ }),
-/* 571 */
+/* 573 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -106966,7 +107285,7 @@ MemoryCookieStore.prototype.getAllCookies = function(cb) {
 
 
 /***/ }),
-/* 572 */
+/* 574 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -107045,7 +107364,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 573 */
+/* 575 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -107055,7 +107374,7 @@ var net = __webpack_require__(87)
   , tls = __webpack_require__(319)
   , http = __webpack_require__(34)
   , https = __webpack_require__(66)
-  , events = __webpack_require__(582)
+  , events = __webpack_require__(584)
   , assert = __webpack_require__(41)
   , util = __webpack_require__(3)
   , Buffer = __webpack_require__(60).Buffer
@@ -107296,7 +107615,7 @@ exports.debug = debug // for test
 
 
 /***/ }),
-/* 574 */
+/* 576 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Unique ID creation requires a high quality random # generator.  We feature
@@ -107405,7 +107724,7 @@ module.exports = v1;
 
 
 /***/ }),
-/* 575 */
+/* 577 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var rng = __webpack_require__(316);
@@ -107440,7 +107759,7 @@ module.exports = v4;
 
 
 /***/ }),
-/* 576 */
+/* 578 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -107603,7 +107922,7 @@ WError.prototype.cause = function we_cause(c)
 
 
 /***/ }),
-/* 577 */
+/* 579 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -107611,7 +107930,7 @@ WError.prototype.cause = function we_cause(c)
  */
 
 var slice = [].slice;
-var wrap = __webpack_require__(578);
+var wrap = __webpack_require__(580);
 
 /**
  * Expose `Ware`.
@@ -107700,7 +108019,7 @@ Ware.prototype.run = function () {
 
 
 /***/ }),
-/* 578 */
+/* 580 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -107708,7 +108027,7 @@ Ware.prototype.run = function () {
  */
 
 var noop = function(){};
-var co = __webpack_require__(579);
+var co = __webpack_require__(581);
 
 /**
  * Export `wrap-fn`
@@ -107831,7 +108150,7 @@ function once(fn) {
 
 
 /***/ }),
-/* 579 */
+/* 581 */
 /***/ (function(module, exports) {
 
 
@@ -108131,25 +108450,25 @@ function error(err) {
 
 
 /***/ }),
-/* 580 */
+/* 582 */
 /***/ (function(module, exports) {
 
 module.exports = require("dgram");
 
 /***/ }),
-/* 581 */
+/* 583 */
 /***/ (function(module, exports) {
 
 module.exports = require("dns");
 
 /***/ }),
-/* 582 */
+/* 584 */
 /***/ (function(module, exports) {
 
 module.exports = require("events");
 
 /***/ }),
-/* 583 */
+/* 585 */
 /***/ (function(module, exports) {
 
 module.exports = require("tty");
