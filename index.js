@@ -4541,7 +4541,7 @@ return hooks;
 /***/ (function(module, exports, __webpack_require__) {
 
 var global    = __webpack_require__(4)
-  , core      = __webpack_require__(52)
+  , core      = __webpack_require__(53)
   , hide      = __webpack_require__(20)
   , redefine  = __webpack_require__(31)
   , ctx       = __webpack_require__(23)
@@ -5168,7 +5168,7 @@ module.exports = function(exec){
 
 var anObject       = __webpack_require__(6)
   , IE8_DOM_DEFINE = __webpack_require__(151)
-  , toPrimitive    = __webpack_require__(59)
+  , toPrimitive    = __webpack_require__(60)
   , dP             = Object.defineProperty;
 
 exports.f = __webpack_require__(18) ? Object.defineProperty : function defineProperty(O, P, Attributes){
@@ -5368,7 +5368,7 @@ module.exports = Key;
 var assert = __webpack_require__(5);
 var algs = __webpack_require__(12);
 var crypto = __webpack_require__(2);
-var Fingerprint = __webpack_require__(62);
+var Fingerprint = __webpack_require__(63);
 var Signature = __webpack_require__(26);
 var DiffieHellman = __webpack_require__(306).DiffieHellman;
 var errs = __webpack_require__(25);
@@ -5389,7 +5389,7 @@ var formats = {};
 formats['auto'] = __webpack_require__(308);
 formats['pem'] = __webpack_require__(33);
 formats['pkcs1'] = __webpack_require__(124);
-formats['pkcs8'] = __webpack_require__(63);
+formats['pkcs8'] = __webpack_require__(64);
 formats['rfc4253'] = __webpack_require__(40);
 formats['ssh'] = __webpack_require__(309);
 formats['ssh-private'] = __webpack_require__(83);
@@ -5648,7 +5648,7 @@ module.exports = PrivateKey;
 var assert = __webpack_require__(5);
 var algs = __webpack_require__(12);
 var crypto = __webpack_require__(2);
-var Fingerprint = __webpack_require__(62);
+var Fingerprint = __webpack_require__(63);
 var Signature = __webpack_require__(26);
 var errs = __webpack_require__(25);
 var util = __webpack_require__(3);
@@ -5675,7 +5675,7 @@ var formats = {};
 formats['auto'] = __webpack_require__(308);
 formats['pem'] = __webpack_require__(33);
 formats['pkcs1'] = __webpack_require__(124);
-formats['pkcs8'] = __webpack_require__(63);
+formats['pkcs8'] = __webpack_require__(64);
 formats['rfc4253'] = __webpack_require__(40);
 formats['ssh-private'] = __webpack_require__(83);
 formats['openssh'] = formats['ssh-private'];
@@ -6014,21 +6014,21 @@ if(__webpack_require__(18)){
     , redefineAll         = __webpack_require__(48)
     , toInteger           = __webpack_require__(50)
     , toLength            = __webpack_require__(19)
-    , toIndex             = __webpack_require__(58)
-    , toPrimitive         = __webpack_require__(59)
+    , toIndex             = __webpack_require__(59)
+    , toPrimitive         = __webpack_require__(60)
     , has                 = __webpack_require__(16)
     , same                = __webpack_require__(163)
     , classof             = __webpack_require__(96)
     , isObject            = __webpack_require__(8)
     , toObject            = __webpack_require__(37)
     , isArrayIter         = __webpack_require__(102)
-    , create              = __webpack_require__(54)
-    , getPrototypeOf      = __webpack_require__(56)
-    , gOPN                = __webpack_require__(55).f
+    , create              = __webpack_require__(55)
+    , getPrototypeOf      = __webpack_require__(57)
+    , gOPN                = __webpack_require__(56).f
     , getIterFn           = __webpack_require__(112)
     , uid                 = __webpack_require__(38)
     , wks                 = __webpack_require__(7)
-    , createArrayMethod   = __webpack_require__(51)
+    , createArrayMethod   = __webpack_require__(52)
     , createArrayIncludes = __webpack_require__(95)
     , speciesConstructor  = __webpack_require__(164)
     , ArrayIterators      = __webpack_require__(113)
@@ -6928,10 +6928,10 @@ module.exports = function(it){
 /* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var pIE            = __webpack_require__(57)
+var pIE            = __webpack_require__(58)
   , createDesc     = __webpack_require__(30)
   , toIObject      = __webpack_require__(22)
-  , toPrimitive    = __webpack_require__(59)
+  , toPrimitive    = __webpack_require__(60)
   , has            = __webpack_require__(16)
   , IE8_DOM_DEFINE = __webpack_require__(151)
   , gOPD           = Object.getOwnPropertyDescriptor;
@@ -6970,7 +6970,7 @@ var global    = __webpack_require__(4)
   , $toString = Function[TO_STRING]
   , TPL       = ('' + $toString).split(TO_STRING);
 
-__webpack_require__(52).inspectSource = function(it){
+__webpack_require__(53).inspectSource = function(it){
   return $toString.call(it);
 };
 
@@ -8378,7 +8378,7 @@ var Key = __webpack_require__(13);
 var PrivateKey = __webpack_require__(14);
 
 var pkcs1 = __webpack_require__(124);
-var pkcs8 = __webpack_require__(63);
+var pkcs8 = __webpack_require__(64);
 var sshpriv = __webpack_require__(83);
 var rfc4253 = __webpack_require__(40);
 
@@ -9166,1652 +9166,6 @@ module.exports = function(it){
 
 /***/ }),
 /* 51 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 0 -> Array#forEach
-// 1 -> Array#map
-// 2 -> Array#filter
-// 3 -> Array#some
-// 4 -> Array#every
-// 5 -> Array#find
-// 6 -> Array#findIndex
-var ctx      = __webpack_require__(23)
-  , IObject  = __webpack_require__(101)
-  , toObject = __webpack_require__(37)
-  , toLength = __webpack_require__(19)
-  , asc      = __webpack_require__(367);
-module.exports = function(TYPE, $create){
-  var IS_MAP        = TYPE == 1
-    , IS_FILTER     = TYPE == 2
-    , IS_SOME       = TYPE == 3
-    , IS_EVERY      = TYPE == 4
-    , IS_FIND_INDEX = TYPE == 6
-    , NO_HOLES      = TYPE == 5 || IS_FIND_INDEX
-    , create        = $create || asc;
-  return function($this, callbackfn, that){
-    var O      = toObject($this)
-      , self   = IObject(O)
-      , f      = ctx(callbackfn, that, 3)
-      , length = toLength(self.length)
-      , index  = 0
-      , result = IS_MAP ? create($this, length) : IS_FILTER ? create($this, 0) : undefined
-      , val, res;
-    for(;length > index; index++)if(NO_HOLES || index in self){
-      val = self[index];
-      res = f(val, index, O);
-      if(TYPE){
-        if(IS_MAP)result[index] = res;            // map
-        else if(res)switch(TYPE){
-          case 3: return true;                    // some
-          case 5: return val;                     // find
-          case 6: return index;                   // findIndex
-          case 2: result.push(val);               // filter
-        } else if(IS_EVERY)return false;          // every
-      }
-    }
-    return IS_FIND_INDEX ? -1 : IS_SOME || IS_EVERY ? IS_EVERY : result;
-  };
-};
-
-/***/ }),
-/* 52 */
-/***/ (function(module, exports) {
-
-var core = module.exports = {version: '2.4.0'};
-if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
-
-/***/ }),
-/* 53 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var META     = __webpack_require__(38)('meta')
-  , isObject = __webpack_require__(8)
-  , has      = __webpack_require__(16)
-  , setDesc  = __webpack_require__(11).f
-  , id       = 0;
-var isExtensible = Object.isExtensible || function(){
-  return true;
-};
-var FREEZE = !__webpack_require__(10)(function(){
-  return isExtensible(Object.preventExtensions({}));
-});
-var setMeta = function(it){
-  setDesc(it, META, {value: {
-    i: 'O' + ++id, // object ID
-    w: {}          // weak collections IDs
-  }});
-};
-var fastKey = function(it, create){
-  // return primitive with prefix
-  if(!isObject(it))return typeof it == 'symbol' ? it : (typeof it == 'string' ? 'S' : 'P') + it;
-  if(!has(it, META)){
-    // can't set metadata to uncaught frozen object
-    if(!isExtensible(it))return 'F';
-    // not necessary to add metadata
-    if(!create)return 'E';
-    // add missing metadata
-    setMeta(it);
-  // return object ID
-  } return it[META].i;
-};
-var getWeak = function(it, create){
-  if(!has(it, META)){
-    // can't set metadata to uncaught frozen object
-    if(!isExtensible(it))return true;
-    // not necessary to add metadata
-    if(!create)return false;
-    // add missing metadata
-    setMeta(it);
-  // return hash weak collections IDs
-  } return it[META].w;
-};
-// add metadata on freeze-family methods calling
-var onFreeze = function(it){
-  if(FREEZE && meta.NEED && isExtensible(it) && !has(it, META))setMeta(it);
-  return it;
-};
-var meta = module.exports = {
-  KEY:      META,
-  NEED:     false,
-  fastKey:  fastKey,
-  getWeak:  getWeak,
-  onFreeze: onFreeze
-};
-
-/***/ }),
-/* 54 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
-var anObject    = __webpack_require__(6)
-  , dPs         = __webpack_require__(375)
-  , enumBugKeys = __webpack_require__(99)
-  , IE_PROTO    = __webpack_require__(107)('IE_PROTO')
-  , Empty       = function(){ /* empty */ }
-  , PROTOTYPE   = 'prototype';
-
-// Create object with fake `null` prototype: use iframe Object with cleared prototype
-var createDict = function(){
-  // Thrash, waste and sodomy: IE GC bug
-  var iframe = __webpack_require__(98)('iframe')
-    , i      = enumBugKeys.length
-    , lt     = '<'
-    , gt     = '>'
-    , iframeDocument;
-  iframe.style.display = 'none';
-  __webpack_require__(150).appendChild(iframe);
-  iframe.src = 'javascript:'; // eslint-disable-line no-script-url
-  // createDict = iframe.contentWindow.Object;
-  // html.removeChild(iframe);
-  iframeDocument = iframe.contentWindow.document;
-  iframeDocument.open();
-  iframeDocument.write(lt + 'script' + gt + 'document.F=Object' + lt + '/script' + gt);
-  iframeDocument.close();
-  createDict = iframeDocument.F;
-  while(i--)delete createDict[PROTOTYPE][enumBugKeys[i]];
-  return createDict();
-};
-
-module.exports = Object.create || function create(O, Properties){
-  var result;
-  if(O !== null){
-    Empty[PROTOTYPE] = anObject(O);
-    result = new Empty;
-    Empty[PROTOTYPE] = null;
-    // add "__proto__" for Object.getPrototypeOf polyfill
-    result[IE_PROTO] = O;
-  } else result = createDict();
-  return Properties === undefined ? result : dPs(result, Properties);
-};
-
-
-/***/ }),
-/* 55 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
-var $keys      = __webpack_require__(160)
-  , hiddenKeys = __webpack_require__(99).concat('length', 'prototype');
-
-exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O){
-  return $keys(O, hiddenKeys);
-};
-
-/***/ }),
-/* 56 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
-var has         = __webpack_require__(16)
-  , toObject    = __webpack_require__(37)
-  , IE_PROTO    = __webpack_require__(107)('IE_PROTO')
-  , ObjectProto = Object.prototype;
-
-module.exports = Object.getPrototypeOf || function(O){
-  O = toObject(O);
-  if(has(O, IE_PROTO))return O[IE_PROTO];
-  if(typeof O.constructor == 'function' && O instanceof O.constructor){
-    return O.constructor.prototype;
-  } return O instanceof Object ? ObjectProto : null;
-};
-
-/***/ }),
-/* 57 */
-/***/ (function(module, exports) {
-
-exports.f = {}.propertyIsEnumerable;
-
-/***/ }),
-/* 58 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var toInteger = __webpack_require__(50)
-  , max       = Math.max
-  , min       = Math.min;
-module.exports = function(index, length){
-  index = toInteger(index);
-  return index < 0 ? max(index + length, 0) : min(index, length);
-};
-
-/***/ }),
-/* 59 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 7.1.1 ToPrimitive(input [, PreferredType])
-var isObject = __webpack_require__(8);
-// instead of the ES6 spec version, we didn't implement @@toPrimitive case
-// and the second argument - flag - preferred type is a string
-module.exports = function(it, S){
-  if(!isObject(it))return it;
-  var fn, val;
-  if(S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
-  if(typeof (fn = it.valueOf) == 'function' && !isObject(val = fn.call(it)))return val;
-  if(!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
-  throw TypeError("Can't convert object to primitive value");
-};
-
-/***/ }),
-/* 60 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var buffer = __webpack_require__(21)
-
-if (Buffer.from && Buffer.alloc && Buffer.allocUnsafe && Buffer.allocUnsafeSlow) {
-  module.exports = buffer
-} else {
-  // Copy properties from require('buffer')
-  Object.keys(buffer).forEach(function (prop) {
-    exports[prop] = buffer[prop]
-  })
-  exports.Buffer = SafeBuffer
-}
-
-function SafeBuffer (arg, encodingOrOffset, length) {
-  return Buffer(arg, encodingOrOffset, length)
-}
-
-// Copy static methods from Buffer
-Object.keys(Buffer).forEach(function (prop) {
-  SafeBuffer[prop] = Buffer[prop]
-})
-
-SafeBuffer.from = function (arg, encodingOrOffset, length) {
-  if (typeof arg === 'number') {
-    throw new TypeError('Argument must not be a number')
-  }
-  return Buffer(arg, encodingOrOffset, length)
-}
-
-SafeBuffer.alloc = function (size, fill, encoding) {
-  if (typeof size !== 'number') {
-    throw new TypeError('Argument must be a number')
-  }
-  var buf = Buffer(size)
-  if (fill !== undefined) {
-    if (typeof encoding === 'string') {
-      buf.fill(fill, encoding)
-    } else {
-      buf.fill(fill)
-    }
-  } else {
-    buf.fill(0)
-  }
-  return buf
-}
-
-SafeBuffer.allocUnsafe = function (size) {
-  if (typeof size !== 'number') {
-    throw new TypeError('Argument must be a number')
-  }
-  return Buffer(size)
-}
-
-SafeBuffer.allocUnsafeSlow = function (size) {
-  if (typeof size !== 'number') {
-    throw new TypeError('Argument must be a number')
-  }
-  return buffer.SlowBuffer(size)
-}
-
-
-/***/ }),
-/* 61 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// Copyright 2016 Joyent, Inc.
-
-module.exports = Certificate;
-
-var assert = __webpack_require__(5);
-var algs = __webpack_require__(12);
-var crypto = __webpack_require__(2);
-var Fingerprint = __webpack_require__(62);
-var Signature = __webpack_require__(26);
-var errs = __webpack_require__(25);
-var util = __webpack_require__(3);
-var utils = __webpack_require__(9);
-var Key = __webpack_require__(13);
-var PrivateKey = __webpack_require__(14);
-var Identity = __webpack_require__(64);
-
-var formats = {};
-formats['openssh'] = __webpack_require__(569);
-formats['x509'] = __webpack_require__(310);
-formats['pem'] = __webpack_require__(570);
-
-var CertificateParseError = errs.CertificateParseError;
-var InvalidAlgorithmError = errs.InvalidAlgorithmError;
-
-function Certificate(opts) {
-	assert.object(opts, 'options');
-	assert.arrayOfObject(opts.subjects, 'options.subjects');
-	utils.assertCompatible(opts.subjects[0], Identity, [1, 0],
-	    'options.subjects');
-	utils.assertCompatible(opts.subjectKey, Key, [1, 0],
-	    'options.subjectKey');
-	utils.assertCompatible(opts.issuer, Identity, [1, 0], 'options.issuer');
-	if (opts.issuerKey !== undefined) {
-		utils.assertCompatible(opts.issuerKey, Key, [1, 0],
-		    'options.issuerKey');
-	}
-	assert.object(opts.signatures, 'options.signatures');
-	assert.buffer(opts.serial, 'options.serial');
-	assert.date(opts.validFrom, 'options.validFrom');
-	assert.date(opts.validUntil, 'optons.validUntil');
-
-	assert.optionalArrayOfString(opts.purposes, 'options.purposes');
-
-	this._hashCache = {};
-
-	this.subjects = opts.subjects;
-	this.issuer = opts.issuer;
-	this.subjectKey = opts.subjectKey;
-	this.issuerKey = opts.issuerKey;
-	this.signatures = opts.signatures;
-	this.serial = opts.serial;
-	this.validFrom = opts.validFrom;
-	this.validUntil = opts.validUntil;
-	this.purposes = opts.purposes;
-}
-
-Certificate.formats = formats;
-
-Certificate.prototype.toBuffer = function (format, options) {
-	if (format === undefined)
-		format = 'x509';
-	assert.string(format, 'format');
-	assert.object(formats[format], 'formats[format]');
-	assert.optionalObject(options, 'options');
-
-	return (formats[format].write(this, options));
-};
-
-Certificate.prototype.toString = function (format, options) {
-	if (format === undefined)
-		format = 'pem';
-	return (this.toBuffer(format, options).toString());
-};
-
-Certificate.prototype.fingerprint = function (algo) {
-	if (algo === undefined)
-		algo = 'sha256';
-	assert.string(algo, 'algorithm');
-	var opts = {
-		type: 'certificate',
-		hash: this.hash(algo),
-		algorithm: algo
-	};
-	return (new Fingerprint(opts));
-};
-
-Certificate.prototype.hash = function (algo) {
-	assert.string(algo, 'algorithm');
-	algo = algo.toLowerCase();
-	if (algs.hashAlgs[algo] === undefined)
-		throw (new InvalidAlgorithmError(algo));
-
-	if (this._hashCache[algo])
-		return (this._hashCache[algo]);
-
-	var hash = crypto.createHash(algo).
-	    update(this.toBuffer('x509')).digest();
-	this._hashCache[algo] = hash;
-	return (hash);
-};
-
-Certificate.prototype.isExpired = function (when) {
-	if (when === undefined)
-		when = new Date();
-	return (!((when.getTime() >= this.validFrom.getTime()) &&
-		(when.getTime() < this.validUntil.getTime())));
-};
-
-Certificate.prototype.isSignedBy = function (issuerCert) {
-	utils.assertCompatible(issuerCert, Certificate, [1, 0], 'issuer');
-
-	if (!this.issuer.equals(issuerCert.subjects[0]))
-		return (false);
-	if (this.issuer.purposes && this.issuer.purposes.length > 0 &&
-	    this.issuer.purposes.indexOf('ca') === -1) {
-		return (false);
-	}
-
-	return (this.isSignedByKey(issuerCert.subjectKey));
-};
-
-Certificate.prototype.isSignedByKey = function (issuerKey) {
-	utils.assertCompatible(issuerKey, Key, [1, 2], 'issuerKey');
-
-	if (this.issuerKey !== undefined) {
-		return (this.issuerKey.
-		    fingerprint('sha512').matches(issuerKey));
-	}
-
-	var fmt = Object.keys(this.signatures)[0];
-	var valid = formats[fmt].verify(this, issuerKey);
-	if (valid)
-		this.issuerKey = issuerKey;
-	return (valid);
-};
-
-Certificate.prototype.signWith = function (key) {
-	utils.assertCompatible(key, PrivateKey, [1, 2], 'key');
-	var fmts = Object.keys(formats);
-	var didOne = false;
-	for (var i = 0; i < fmts.length; ++i) {
-		if (fmts[i] !== 'pem') {
-			var ret = formats[fmts[i]].sign(this, key);
-			if (ret === true)
-				didOne = true;
-		}
-	}
-	if (!didOne) {
-		throw (new Error('Failed to sign the certificate for any ' +
-		    'available certificate formats'));
-	}
-};
-
-Certificate.createSelfSigned = function (subjectOrSubjects, key, options) {
-	var subjects;
-	if (Array.isArray(subjectOrSubjects))
-		subjects = subjectOrSubjects;
-	else
-		subjects = [subjectOrSubjects];
-
-	assert.arrayOfObject(subjects);
-	subjects.forEach(function (subject) {
-		utils.assertCompatible(subject, Identity, [1, 0], 'subject');
-	});
-
-	utils.assertCompatible(key, PrivateKey, [1, 2], 'private key');
-
-	assert.optionalObject(options, 'options');
-	if (options === undefined)
-		options = {};
-	assert.optionalObject(options.validFrom, 'options.validFrom');
-	assert.optionalObject(options.validUntil, 'options.validUntil');
-	var validFrom = options.validFrom;
-	var validUntil = options.validUntil;
-	if (validFrom === undefined)
-		validFrom = new Date();
-	if (validUntil === undefined) {
-		assert.optionalNumber(options.lifetime, 'options.lifetime');
-		var lifetime = options.lifetime;
-		if (lifetime === undefined)
-			lifetime = 10*365*24*3600;
-		validUntil = new Date();
-		validUntil.setTime(validUntil.getTime() + lifetime*1000);
-	}
-	assert.optionalBuffer(options.serial, 'options.serial');
-	var serial = options.serial;
-	if (serial === undefined)
-		serial = new Buffer('0000000000000001', 'hex');
-
-	var purposes = options.purposes;
-	if (purposes === undefined)
-		purposes = [];
-
-	if (purposes.indexOf('signature') === -1)
-		purposes.push('signature');
-
-	/* Self-signed certs are always CAs. */
-	if (purposes.indexOf('ca') === -1)
-		purposes.push('ca');
-	if (purposes.indexOf('crl') === -1)
-		purposes.push('crl');
-
-	/*
-	 * If we weren't explicitly given any other purposes, do the sensible
-	 * thing and add some basic ones depending on the subject type.
-	 */
-	if (purposes.length <= 3) {
-		var hostSubjects = subjects.filter(function (subject) {
-			return (subject.type === 'host');
-		});
-		var userSubjects = subjects.filter(function (subject) {
-			return (subject.type === 'user');
-		});
-		if (hostSubjects.length > 0) {
-			if (purposes.indexOf('serverAuth') === -1)
-				purposes.push('serverAuth');
-		}
-		if (userSubjects.length > 0) {
-			if (purposes.indexOf('clientAuth') === -1)
-				purposes.push('clientAuth');
-		}
-		if (userSubjects.length > 0 || hostSubjects.length > 0) {
-			if (purposes.indexOf('keyAgreement') === -1)
-				purposes.push('keyAgreement');
-			if (key.type === 'rsa' &&
-			    purposes.indexOf('encryption') === -1)
-				purposes.push('encryption');
-		}
-	}
-
-	var cert = new Certificate({
-		subjects: subjects,
-		issuer: subjects[0],
-		subjectKey: key.toPublic(),
-		issuerKey: key.toPublic(),
-		signatures: {},
-		serial: serial,
-		validFrom: validFrom,
-		validUntil: validUntil,
-		purposes: purposes
-	});
-	cert.signWith(key);
-
-	return (cert);
-};
-
-Certificate.create =
-    function (subjectOrSubjects, key, issuer, issuerKey, options) {
-	var subjects;
-	if (Array.isArray(subjectOrSubjects))
-		subjects = subjectOrSubjects;
-	else
-		subjects = [subjectOrSubjects];
-
-	assert.arrayOfObject(subjects);
-	subjects.forEach(function (subject) {
-		utils.assertCompatible(subject, Identity, [1, 0], 'subject');
-	});
-
-	utils.assertCompatible(key, Key, [1, 0], 'key');
-	if (PrivateKey.isPrivateKey(key))
-		key = key.toPublic();
-	utils.assertCompatible(issuer, Identity, [1, 0], 'issuer');
-	utils.assertCompatible(issuerKey, PrivateKey, [1, 2], 'issuer key');
-
-	assert.optionalObject(options, 'options');
-	if (options === undefined)
-		options = {};
-	assert.optionalObject(options.validFrom, 'options.validFrom');
-	assert.optionalObject(options.validUntil, 'options.validUntil');
-	var validFrom = options.validFrom;
-	var validUntil = options.validUntil;
-	if (validFrom === undefined)
-		validFrom = new Date();
-	if (validUntil === undefined) {
-		assert.optionalNumber(options.lifetime, 'options.lifetime');
-		var lifetime = options.lifetime;
-		if (lifetime === undefined)
-			lifetime = 10*365*24*3600;
-		validUntil = new Date();
-		validUntil.setTime(validUntil.getTime() + lifetime*1000);
-	}
-	assert.optionalBuffer(options.serial, 'options.serial');
-	var serial = options.serial;
-	if (serial === undefined)
-		serial = new Buffer('0000000000000001', 'hex');
-
-	var purposes = options.purposes;
-	if (purposes === undefined)
-		purposes = [];
-
-	if (purposes.indexOf('signature') === -1)
-		purposes.push('signature');
-
-	if (options.ca === true) {
-		if (purposes.indexOf('ca') === -1)
-			purposes.push('ca');
-		if (purposes.indexOf('crl') === -1)
-			purposes.push('crl');
-	}
-
-	var hostSubjects = subjects.filter(function (subject) {
-		return (subject.type === 'host');
-	});
-	var userSubjects = subjects.filter(function (subject) {
-		return (subject.type === 'user');
-	});
-	if (hostSubjects.length > 0) {
-		if (purposes.indexOf('serverAuth') === -1)
-			purposes.push('serverAuth');
-	}
-	if (userSubjects.length > 0) {
-		if (purposes.indexOf('clientAuth') === -1)
-			purposes.push('clientAuth');
-	}
-	if (userSubjects.length > 0 || hostSubjects.length > 0) {
-		if (purposes.indexOf('keyAgreement') === -1)
-			purposes.push('keyAgreement');
-		if (key.type === 'rsa' &&
-		    purposes.indexOf('encryption') === -1)
-			purposes.push('encryption');
-	}
-
-	var cert = new Certificate({
-		subjects: subjects,
-		issuer: issuer,
-		subjectKey: key,
-		issuerKey: issuerKey.toPublic(),
-		signatures: {},
-		serial: serial,
-		validFrom: validFrom,
-		validUntil: validUntil,
-		purposes: purposes
-	});
-	cert.signWith(issuerKey);
-
-	return (cert);
-};
-
-Certificate.parse = function (data, format, options) {
-	if (typeof (data) !== 'string')
-		assert.buffer(data, 'data');
-	if (format === undefined)
-		format = 'auto';
-	assert.string(format, 'format');
-	if (typeof (options) === 'string')
-		options = { filename: options };
-	assert.optionalObject(options, 'options');
-	if (options === undefined)
-		options = {};
-	assert.optionalString(options.filename, 'options.filename');
-	if (options.filename === undefined)
-		options.filename = '(unnamed)';
-
-	assert.object(formats[format], 'formats[format]');
-
-	try {
-		var k = formats[format].read(data, options);
-		return (k);
-	} catch (e) {
-		throw (new CertificateParseError(options.filename, format, e));
-	}
-};
-
-Certificate.isCertificate = function (obj, ver) {
-	return (utils.isCompatible(obj, Certificate, ver));
-};
-
-/*
- * API versions for Certificate:
- * [1,0] -- initial ver
- */
-Certificate.prototype._sshpkApiVersion = [1, 0];
-
-Certificate._oldVersionDetect = function (obj) {
-	return ([1, 0]);
-};
-
-
-/***/ }),
-/* 62 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// Copyright 2015 Joyent, Inc.
-
-module.exports = Fingerprint;
-
-var assert = __webpack_require__(5);
-var algs = __webpack_require__(12);
-var crypto = __webpack_require__(2);
-var errs = __webpack_require__(25);
-var Key = __webpack_require__(13);
-var Certificate = __webpack_require__(61);
-var utils = __webpack_require__(9);
-
-var FingerprintFormatError = errs.FingerprintFormatError;
-var InvalidAlgorithmError = errs.InvalidAlgorithmError;
-
-function Fingerprint(opts) {
-	assert.object(opts, 'options');
-	assert.string(opts.type, 'options.type');
-	assert.buffer(opts.hash, 'options.hash');
-	assert.string(opts.algorithm, 'options.algorithm');
-
-	this.algorithm = opts.algorithm.toLowerCase();
-	if (algs.hashAlgs[this.algorithm] !== true)
-		throw (new InvalidAlgorithmError(this.algorithm));
-
-	this.hash = opts.hash;
-	this.type = opts.type;
-}
-
-Fingerprint.prototype.toString = function (format) {
-	if (format === undefined) {
-		if (this.algorithm === 'md5')
-			format = 'hex';
-		else
-			format = 'base64';
-	}
-	assert.string(format);
-
-	switch (format) {
-	case 'hex':
-		return (addColons(this.hash.toString('hex')));
-	case 'base64':
-		return (sshBase64Format(this.algorithm,
-		    this.hash.toString('base64')));
-	default:
-		throw (new FingerprintFormatError(undefined, format));
-	}
-};
-
-Fingerprint.prototype.matches = function (other) {
-	assert.object(other, 'key or certificate');
-	if (this.type === 'key') {
-		utils.assertCompatible(other, Key, [1, 0], 'key');
-	} else {
-		utils.assertCompatible(other, Certificate, [1, 0],
-		    'certificate');
-	}
-
-	var theirHash = other.hash(this.algorithm);
-	var theirHash2 = crypto.createHash(this.algorithm).
-	    update(theirHash).digest('base64');
-
-	if (this.hash2 === undefined)
-		this.hash2 = crypto.createHash(this.algorithm).
-		    update(this.hash).digest('base64');
-
-	return (this.hash2 === theirHash2);
-};
-
-Fingerprint.parse = function (fp, options) {
-	assert.string(fp, 'fingerprint');
-
-	var alg, hash, enAlgs;
-	if (Array.isArray(options)) {
-		enAlgs = options;
-		options = {};
-	}
-	assert.optionalObject(options, 'options');
-	if (options === undefined)
-		options = {};
-	if (options.enAlgs !== undefined)
-		enAlgs = options.enAlgs;
-	assert.optionalArrayOfString(enAlgs, 'algorithms');
-
-	var parts = fp.split(':');
-	if (parts.length == 2) {
-		alg = parts[0].toLowerCase();
-		/*JSSTYLED*/
-		var base64RE = /^[A-Za-z0-9+\/=]+$/;
-		if (!base64RE.test(parts[1]))
-			throw (new FingerprintFormatError(fp));
-		try {
-			hash = new Buffer(parts[1], 'base64');
-		} catch (e) {
-			throw (new FingerprintFormatError(fp));
-		}
-	} else if (parts.length > 2) {
-		alg = 'md5';
-		if (parts[0].toLowerCase() === 'md5')
-			parts = parts.slice(1);
-		parts = parts.join('');
-		/*JSSTYLED*/
-		var md5RE = /^[a-fA-F0-9]+$/;
-		if (!md5RE.test(parts))
-			throw (new FingerprintFormatError(fp));
-		try {
-			hash = new Buffer(parts, 'hex');
-		} catch (e) {
-			throw (new FingerprintFormatError(fp));
-		}
-	}
-
-	if (alg === undefined)
-		throw (new FingerprintFormatError(fp));
-
-	if (algs.hashAlgs[alg] === undefined)
-		throw (new InvalidAlgorithmError(alg));
-
-	if (enAlgs !== undefined) {
-		enAlgs = enAlgs.map(function (a) { return a.toLowerCase(); });
-		if (enAlgs.indexOf(alg) === -1)
-			throw (new InvalidAlgorithmError(alg));
-	}
-
-	return (new Fingerprint({
-		algorithm: alg,
-		hash: hash,
-		type: options.type || 'key'
-	}));
-};
-
-function addColons(s) {
-	/*JSSTYLED*/
-	return (s.replace(/(.{2})(?=.)/g, '$1:'));
-}
-
-function base64Strip(s) {
-	/*JSSTYLED*/
-	return (s.replace(/=*$/, ''));
-}
-
-function sshBase64Format(alg, h) {
-	return (alg.toUpperCase() + ':' + base64Strip(h));
-}
-
-Fingerprint.isFingerprint = function (obj, ver) {
-	return (utils.isCompatible(obj, Fingerprint, ver));
-};
-
-/*
- * API versions for Fingerprint:
- * [1,0] -- initial ver
- * [1,1] -- first tagged ver
- */
-Fingerprint.prototype._sshpkApiVersion = [1, 1];
-
-Fingerprint._oldVersionDetect = function (obj) {
-	assert.func(obj.toString);
-	assert.func(obj.matches);
-	return ([1, 0]);
-};
-
-
-/***/ }),
-/* 63 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// Copyright 2015 Joyent, Inc.
-
-module.exports = {
-	read: read,
-	readPkcs8: readPkcs8,
-	write: write,
-	writePkcs8: writePkcs8,
-
-	readECDSACurve: readECDSACurve,
-	writeECDSACurve: writeECDSACurve
-};
-
-var assert = __webpack_require__(5);
-var asn1 = __webpack_require__(27);
-var algs = __webpack_require__(12);
-var utils = __webpack_require__(9);
-var Key = __webpack_require__(13);
-var PrivateKey = __webpack_require__(14);
-var pem = __webpack_require__(33);
-
-function read(buf, options) {
-	return (pem.read(buf, options, 'pkcs8'));
-}
-
-function write(key, options) {
-	return (pem.write(key, options, 'pkcs8'));
-}
-
-/* Helper to read in a single mpint */
-function readMPInt(der, nm) {
-	assert.strictEqual(der.peek(), asn1.Ber.Integer,
-	    nm + ' is not an Integer');
-	return (utils.mpNormalize(der.readString(asn1.Ber.Integer, true)));
-}
-
-function readPkcs8(alg, type, der) {
-	/* Private keys in pkcs#8 format have a weird extra int */
-	if (der.peek() === asn1.Ber.Integer) {
-		assert.strictEqual(type, 'private',
-		    'unexpected Integer at start of public key');
-		der.readString(asn1.Ber.Integer, true);
-	}
-
-	der.readSequence();
-	var next = der.offset + der.length;
-
-	var oid = der.readOID();
-	switch (oid) {
-	case '1.2.840.113549.1.1.1':
-		der._offset = next;
-		if (type === 'public')
-			return (readPkcs8RSAPublic(der));
-		else
-			return (readPkcs8RSAPrivate(der));
-	case '1.2.840.10040.4.1':
-		if (type === 'public')
-			return (readPkcs8DSAPublic(der));
-		else
-			return (readPkcs8DSAPrivate(der));
-	case '1.2.840.10045.2.1':
-		if (type === 'public')
-			return (readPkcs8ECDSAPublic(der));
-		else
-			return (readPkcs8ECDSAPrivate(der));
-	default:
-		throw (new Error('Unknown key type OID ' + oid));
-	}
-}
-
-function readPkcs8RSAPublic(der) {
-	// bit string sequence
-	der.readSequence(asn1.Ber.BitString);
-	der.readByte();
-	der.readSequence();
-
-	// modulus
-	var n = readMPInt(der, 'modulus');
-	var e = readMPInt(der, 'exponent');
-
-	// now, make the key
-	var key = {
-		type: 'rsa',
-		source: der.originalInput,
-		parts: [
-			{ name: 'e', data: e },
-			{ name: 'n', data: n }
-		]
-	};
-
-	return (new Key(key));
-}
-
-function readPkcs8RSAPrivate(der) {
-	der.readSequence(asn1.Ber.OctetString);
-	der.readSequence();
-
-	var ver = readMPInt(der, 'version');
-	assert.equal(ver[0], 0x0, 'unknown RSA private key version');
-
-	// modulus then public exponent
-	var n = readMPInt(der, 'modulus');
-	var e = readMPInt(der, 'public exponent');
-	var d = readMPInt(der, 'private exponent');
-	var p = readMPInt(der, 'prime1');
-	var q = readMPInt(der, 'prime2');
-	var dmodp = readMPInt(der, 'exponent1');
-	var dmodq = readMPInt(der, 'exponent2');
-	var iqmp = readMPInt(der, 'iqmp');
-
-	// now, make the key
-	var key = {
-		type: 'rsa',
-		parts: [
-			{ name: 'n', data: n },
-			{ name: 'e', data: e },
-			{ name: 'd', data: d },
-			{ name: 'iqmp', data: iqmp },
-			{ name: 'p', data: p },
-			{ name: 'q', data: q },
-			{ name: 'dmodp', data: dmodp },
-			{ name: 'dmodq', data: dmodq }
-		]
-	};
-
-	return (new PrivateKey(key));
-}
-
-function readPkcs8DSAPublic(der) {
-	der.readSequence();
-
-	var p = readMPInt(der, 'p');
-	var q = readMPInt(der, 'q');
-	var g = readMPInt(der, 'g');
-
-	// bit string sequence
-	der.readSequence(asn1.Ber.BitString);
-	der.readByte();
-
-	var y = readMPInt(der, 'y');
-
-	// now, make the key
-	var key = {
-		type: 'dsa',
-		parts: [
-			{ name: 'p', data: p },
-			{ name: 'q', data: q },
-			{ name: 'g', data: g },
-			{ name: 'y', data: y }
-		]
-	};
-
-	return (new Key(key));
-}
-
-function readPkcs8DSAPrivate(der) {
-	der.readSequence();
-
-	var p = readMPInt(der, 'p');
-	var q = readMPInt(der, 'q');
-	var g = readMPInt(der, 'g');
-
-	der.readSequence(asn1.Ber.OctetString);
-	var x = readMPInt(der, 'x');
-
-	/* The pkcs#8 format does not include the public key */
-	var y = utils.calculateDSAPublic(g, p, x);
-
-	var key = {
-		type: 'dsa',
-		parts: [
-			{ name: 'p', data: p },
-			{ name: 'q', data: q },
-			{ name: 'g', data: g },
-			{ name: 'y', data: y },
-			{ name: 'x', data: x }
-		]
-	};
-
-	return (new PrivateKey(key));
-}
-
-function readECDSACurve(der) {
-	var curveName, curveNames;
-	var j, c, cd;
-
-	if (der.peek() === asn1.Ber.OID) {
-		var oid = der.readOID();
-
-		curveNames = Object.keys(algs.curves);
-		for (j = 0; j < curveNames.length; ++j) {
-			c = curveNames[j];
-			cd = algs.curves[c];
-			if (cd.pkcs8oid === oid) {
-				curveName = c;
-				break;
-			}
-		}
-
-	} else {
-		// ECParameters sequence
-		der.readSequence();
-		var version = der.readString(asn1.Ber.Integer, true);
-		assert.strictEqual(version[0], 1, 'ECDSA key not version 1');
-
-		var curve = {};
-
-		// FieldID sequence
-		der.readSequence();
-		var fieldTypeOid = der.readOID();
-		assert.strictEqual(fieldTypeOid, '1.2.840.10045.1.1',
-		    'ECDSA key is not from a prime-field');
-		var p = curve.p = utils.mpNormalize(
-		    der.readString(asn1.Ber.Integer, true));
-		/*
-		 * p always starts with a 1 bit, so count the zeros to get its
-		 * real size.
-		 */
-		curve.size = p.length * 8 - utils.countZeros(p);
-
-		// Curve sequence
-		der.readSequence();
-		curve.a = utils.mpNormalize(
-		    der.readString(asn1.Ber.OctetString, true));
-		curve.b = utils.mpNormalize(
-		    der.readString(asn1.Ber.OctetString, true));
-		if (der.peek() === asn1.Ber.BitString)
-			curve.s = der.readString(asn1.Ber.BitString, true);
-
-		// Combined Gx and Gy
-		curve.G = der.readString(asn1.Ber.OctetString, true);
-		assert.strictEqual(curve.G[0], 0x4,
-		    'uncompressed G is required');
-
-		curve.n = utils.mpNormalize(
-		    der.readString(asn1.Ber.Integer, true));
-		curve.h = utils.mpNormalize(
-		    der.readString(asn1.Ber.Integer, true));
-		assert.strictEqual(curve.h[0], 0x1, 'a cofactor=1 curve is ' +
-		    'required');
-
-		curveNames = Object.keys(algs.curves);
-		var ks = Object.keys(curve);
-		for (j = 0; j < curveNames.length; ++j) {
-			c = curveNames[j];
-			cd = algs.curves[c];
-			var equal = true;
-			for (var i = 0; i < ks.length; ++i) {
-				var k = ks[i];
-				if (cd[k] === undefined)
-					continue;
-				if (typeof (cd[k]) === 'object' &&
-				    cd[k].equals !== undefined) {
-					if (!cd[k].equals(curve[k])) {
-						equal = false;
-						break;
-					}
-				} else if (Buffer.isBuffer(cd[k])) {
-					if (cd[k].toString('binary')
-					    !== curve[k].toString('binary')) {
-						equal = false;
-						break;
-					}
-				} else {
-					if (cd[k] !== curve[k]) {
-						equal = false;
-						break;
-					}
-				}
-			}
-			if (equal) {
-				curveName = c;
-				break;
-			}
-		}
-	}
-	return (curveName);
-}
-
-function readPkcs8ECDSAPrivate(der) {
-	var curveName = readECDSACurve(der);
-	assert.string(curveName, 'a known elliptic curve');
-
-	der.readSequence(asn1.Ber.OctetString);
-	der.readSequence();
-
-	var version = readMPInt(der, 'version');
-	assert.equal(version[0], 1, 'unknown version of ECDSA key');
-
-	var d = der.readString(asn1.Ber.OctetString, true);
-	der.readSequence(0xa1);
-
-	var Q = der.readString(asn1.Ber.BitString, true);
-	Q = utils.ecNormalize(Q);
-
-	var key = {
-		type: 'ecdsa',
-		parts: [
-			{ name: 'curve', data: new Buffer(curveName) },
-			{ name: 'Q', data: Q },
-			{ name: 'd', data: d }
-		]
-	};
-
-	return (new PrivateKey(key));
-}
-
-function readPkcs8ECDSAPublic(der) {
-	var curveName = readECDSACurve(der);
-	assert.string(curveName, 'a known elliptic curve');
-
-	var Q = der.readString(asn1.Ber.BitString, true);
-	Q = utils.ecNormalize(Q);
-
-	var key = {
-		type: 'ecdsa',
-		parts: [
-			{ name: 'curve', data: new Buffer(curveName) },
-			{ name: 'Q', data: Q }
-		]
-	};
-
-	return (new Key(key));
-}
-
-function writePkcs8(der, key) {
-	der.startSequence();
-
-	if (PrivateKey.isPrivateKey(key)) {
-		var sillyInt = new Buffer(1);
-		sillyInt[0] = 0x0;
-		der.writeBuffer(sillyInt, asn1.Ber.Integer);
-	}
-
-	der.startSequence();
-	switch (key.type) {
-	case 'rsa':
-		der.writeOID('1.2.840.113549.1.1.1');
-		if (PrivateKey.isPrivateKey(key))
-			writePkcs8RSAPrivate(key, der);
-		else
-			writePkcs8RSAPublic(key, der);
-		break;
-	case 'dsa':
-		der.writeOID('1.2.840.10040.4.1');
-		if (PrivateKey.isPrivateKey(key))
-			writePkcs8DSAPrivate(key, der);
-		else
-			writePkcs8DSAPublic(key, der);
-		break;
-	case 'ecdsa':
-		der.writeOID('1.2.840.10045.2.1');
-		if (PrivateKey.isPrivateKey(key))
-			writePkcs8ECDSAPrivate(key, der);
-		else
-			writePkcs8ECDSAPublic(key, der);
-		break;
-	default:
-		throw (new Error('Unsupported key type: ' + key.type));
-	}
-
-	der.endSequence();
-}
-
-function writePkcs8RSAPrivate(key, der) {
-	der.writeNull();
-	der.endSequence();
-
-	der.startSequence(asn1.Ber.OctetString);
-	der.startSequence();
-
-	var version = new Buffer(1);
-	version[0] = 0;
-	der.writeBuffer(version, asn1.Ber.Integer);
-
-	der.writeBuffer(key.part.n.data, asn1.Ber.Integer);
-	der.writeBuffer(key.part.e.data, asn1.Ber.Integer);
-	der.writeBuffer(key.part.d.data, asn1.Ber.Integer);
-	der.writeBuffer(key.part.p.data, asn1.Ber.Integer);
-	der.writeBuffer(key.part.q.data, asn1.Ber.Integer);
-	if (!key.part.dmodp || !key.part.dmodq)
-		utils.addRSAMissing(key);
-	der.writeBuffer(key.part.dmodp.data, asn1.Ber.Integer);
-	der.writeBuffer(key.part.dmodq.data, asn1.Ber.Integer);
-	der.writeBuffer(key.part.iqmp.data, asn1.Ber.Integer);
-
-	der.endSequence();
-	der.endSequence();
-}
-
-function writePkcs8RSAPublic(key, der) {
-	der.writeNull();
-	der.endSequence();
-
-	der.startSequence(asn1.Ber.BitString);
-	der.writeByte(0x00);
-
-	der.startSequence();
-	der.writeBuffer(key.part.n.data, asn1.Ber.Integer);
-	der.writeBuffer(key.part.e.data, asn1.Ber.Integer);
-	der.endSequence();
-
-	der.endSequence();
-}
-
-function writePkcs8DSAPrivate(key, der) {
-	der.startSequence();
-	der.writeBuffer(key.part.p.data, asn1.Ber.Integer);
-	der.writeBuffer(key.part.q.data, asn1.Ber.Integer);
-	der.writeBuffer(key.part.g.data, asn1.Ber.Integer);
-	der.endSequence();
-
-	der.endSequence();
-
-	der.startSequence(asn1.Ber.OctetString);
-	der.writeBuffer(key.part.x.data, asn1.Ber.Integer);
-	der.endSequence();
-}
-
-function writePkcs8DSAPublic(key, der) {
-	der.startSequence();
-	der.writeBuffer(key.part.p.data, asn1.Ber.Integer);
-	der.writeBuffer(key.part.q.data, asn1.Ber.Integer);
-	der.writeBuffer(key.part.g.data, asn1.Ber.Integer);
-	der.endSequence();
-	der.endSequence();
-
-	der.startSequence(asn1.Ber.BitString);
-	der.writeByte(0x00);
-	der.writeBuffer(key.part.y.data, asn1.Ber.Integer);
-	der.endSequence();
-}
-
-function writeECDSACurve(key, der) {
-	var curve = algs.curves[key.curve];
-	if (curve.pkcs8oid) {
-		/* This one has a name in pkcs#8, so just write the oid */
-		der.writeOID(curve.pkcs8oid);
-
-	} else {
-		// ECParameters sequence
-		der.startSequence();
-
-		var version = new Buffer(1);
-		version.writeUInt8(1, 0);
-		der.writeBuffer(version, asn1.Ber.Integer);
-
-		// FieldID sequence
-		der.startSequence();
-		der.writeOID('1.2.840.10045.1.1'); // prime-field
-		der.writeBuffer(curve.p, asn1.Ber.Integer);
-		der.endSequence();
-
-		// Curve sequence
-		der.startSequence();
-		var a = curve.p;
-		if (a[0] === 0x0)
-			a = a.slice(1);
-		der.writeBuffer(a, asn1.Ber.OctetString);
-		der.writeBuffer(curve.b, asn1.Ber.OctetString);
-		der.writeBuffer(curve.s, asn1.Ber.BitString);
-		der.endSequence();
-
-		der.writeBuffer(curve.G, asn1.Ber.OctetString);
-		der.writeBuffer(curve.n, asn1.Ber.Integer);
-		var h = curve.h;
-		if (!h) {
-			h = new Buffer(1);
-			h[0] = 1;
-		}
-		der.writeBuffer(h, asn1.Ber.Integer);
-
-		// ECParameters
-		der.endSequence();
-	}
-}
-
-function writePkcs8ECDSAPublic(key, der) {
-	writeECDSACurve(key, der);
-	der.endSequence();
-
-	var Q = utils.ecNormalize(key.part.Q.data, true);
-	der.writeBuffer(Q, asn1.Ber.BitString);
-}
-
-function writePkcs8ECDSAPrivate(key, der) {
-	writeECDSACurve(key, der);
-	der.endSequence();
-
-	der.startSequence(asn1.Ber.OctetString);
-	der.startSequence();
-
-	var version = new Buffer(1);
-	version[0] = 1;
-	der.writeBuffer(version, asn1.Ber.Integer);
-
-	der.writeBuffer(key.part.d.data, asn1.Ber.OctetString);
-
-	der.startSequence(0xa1);
-	var Q = utils.ecNormalize(key.part.Q.data, true);
-	der.writeBuffer(Q, asn1.Ber.BitString);
-	der.endSequence();
-
-	der.endSequence();
-	der.endSequence();
-}
-
-
-/***/ }),
-/* 64 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// Copyright 2017 Joyent, Inc.
-
-module.exports = Identity;
-
-var assert = __webpack_require__(5);
-var algs = __webpack_require__(12);
-var crypto = __webpack_require__(2);
-var Fingerprint = __webpack_require__(62);
-var Signature = __webpack_require__(26);
-var errs = __webpack_require__(25);
-var util = __webpack_require__(3);
-var utils = __webpack_require__(9);
-var asn1 = __webpack_require__(27);
-
-/*JSSTYLED*/
-var DNS_NAME_RE = /^([*]|[a-z0-9][a-z0-9\-]{0,62})(?:\.([*]|[a-z0-9][a-z0-9\-]{0,62}))*$/i;
-
-var oids = {};
-oids.cn = '2.5.4.3';
-oids.o = '2.5.4.10';
-oids.ou = '2.5.4.11';
-oids.l = '2.5.4.7';
-oids.s = '2.5.4.8';
-oids.c = '2.5.4.6';
-oids.sn = '2.5.4.4';
-oids.dc = '0.9.2342.19200300.100.1.25';
-oids.uid = '0.9.2342.19200300.100.1.1';
-oids.mail = '0.9.2342.19200300.100.1.3';
-
-var unoids = {};
-Object.keys(oids).forEach(function (k) {
-	unoids[oids[k]] = k;
-});
-
-function Identity(opts) {
-	var self = this;
-	assert.object(opts, 'options');
-	assert.arrayOfObject(opts.components, 'options.components');
-	this.components = opts.components;
-	this.componentLookup = {};
-	this.components.forEach(function (c) {
-		if (c.name && !c.oid)
-			c.oid = oids[c.name];
-		if (c.oid && !c.name)
-			c.name = unoids[c.oid];
-		if (self.componentLookup[c.name] === undefined)
-			self.componentLookup[c.name] = [];
-		self.componentLookup[c.name].push(c);
-	});
-	if (this.componentLookup.cn && this.componentLookup.cn.length > 0) {
-		this.cn = this.componentLookup.cn[0].value;
-	}
-	assert.optionalString(opts.type, 'options.type');
-	if (opts.type === undefined) {
-		if (this.components.length === 1 &&
-		    this.componentLookup.cn &&
-		    this.componentLookup.cn.length === 1 &&
-		    this.componentLookup.cn[0].value.match(DNS_NAME_RE)) {
-			this.type = 'host';
-			this.hostname = this.componentLookup.cn[0].value;
-
-		} else if (this.componentLookup.dc &&
-		    this.components.length === this.componentLookup.dc.length) {
-			this.type = 'host';
-			this.hostname = this.componentLookup.dc.map(
-			    function (c) {
-				return (c.value);
-			}).join('.');
-
-		} else if (this.componentLookup.uid &&
-		    this.components.length ===
-		    this.componentLookup.uid.length) {
-			this.type = 'user';
-			this.uid = this.componentLookup.uid[0].value;
-
-		} else if (this.componentLookup.cn &&
-		    this.componentLookup.cn.length === 1 &&
-		    this.componentLookup.cn[0].value.match(DNS_NAME_RE)) {
-			this.type = 'host';
-			this.hostname = this.componentLookup.cn[0].value;
-
-		} else if (this.componentLookup.uid &&
-		    this.componentLookup.uid.length === 1) {
-			this.type = 'user';
-			this.uid = this.componentLookup.uid[0].value;
-
-		} else if (this.componentLookup.mail &&
-		    this.componentLookup.mail.length === 1) {
-			this.type = 'email';
-			this.email = this.componentLookup.mail[0].value;
-
-		} else if (this.componentLookup.cn &&
-		    this.componentLookup.cn.length === 1) {
-			this.type = 'user';
-			this.uid = this.componentLookup.cn[0].value;
-
-		} else {
-			this.type = 'unknown';
-		}
-	} else {
-		this.type = opts.type;
-		if (this.type === 'host')
-			this.hostname = opts.hostname;
-		else if (this.type === 'user')
-			this.uid = opts.uid;
-		else if (this.type === 'email')
-			this.email = opts.email;
-		else
-			throw (new Error('Unknown type ' + this.type));
-	}
-}
-
-Identity.prototype.toString = function () {
-	return (this.components.map(function (c) {
-		return (c.name.toUpperCase() + '=' + c.value);
-	}).join(', '));
-};
-
-/*
- * These are from X.680 -- PrintableString allowed chars are in section 37.4
- * table 8. Spec for IA5Strings is "1,6 + SPACE + DEL" where 1 refers to
- * ISO IR #001 (standard ASCII control characters) and 6 refers to ISO IR #006
- * (the basic ASCII character set).
- */
-/* JSSTYLED */
-var NOT_PRINTABLE = /[^a-zA-Z0-9 '(),+.\/:=?-]/;
-/* JSSTYLED */
-var NOT_IA5 = /[^\x00-\x7f]/;
-
-Identity.prototype.toAsn1 = function (der, tag) {
-	der.startSequence(tag);
-	this.components.forEach(function (c) {
-		der.startSequence(asn1.Ber.Constructor | asn1.Ber.Set);
-		der.startSequence();
-		der.writeOID(c.oid);
-		/*
-		 * If we fit in a PrintableString, use that. Otherwise use an
-		 * IA5String or UTF8String.
-		 */
-		if (c.value.match(NOT_IA5)) {
-			var v = new Buffer(c.value, 'utf8');
-			der.writeBuffer(v, asn1.Ber.Utf8String);
-		} else if (c.value.match(NOT_PRINTABLE)) {
-			der.writeString(c.value, asn1.Ber.IA5String);
-		} else {
-			der.writeString(c.value, asn1.Ber.PrintableString);
-		}
-		der.endSequence();
-		der.endSequence();
-	});
-	der.endSequence();
-};
-
-function globMatch(a, b) {
-	if (a === '**' || b === '**')
-		return (true);
-	var aParts = a.split('.');
-	var bParts = b.split('.');
-	if (aParts.length !== bParts.length)
-		return (false);
-	for (var i = 0; i < aParts.length; ++i) {
-		if (aParts[i] === '*' || bParts[i] === '*')
-			continue;
-		if (aParts[i] !== bParts[i])
-			return (false);
-	}
-	return (true);
-}
-
-Identity.prototype.equals = function (other) {
-	if (!Identity.isIdentity(other, [1, 0]))
-		return (false);
-	if (other.components.length !== this.components.length)
-		return (false);
-	for (var i = 0; i < this.components.length; ++i) {
-		if (this.components[i].oid !== other.components[i].oid)
-			return (false);
-		if (!globMatch(this.components[i].value,
-		    other.components[i].value)) {
-			return (false);
-		}
-	}
-	return (true);
-};
-
-Identity.forHost = function (hostname) {
-	assert.string(hostname, 'hostname');
-	return (new Identity({
-		type: 'host',
-		hostname: hostname,
-		components: [ { name: 'cn', value: hostname } ]
-	}));
-};
-
-Identity.forUser = function (uid) {
-	assert.string(uid, 'uid');
-	return (new Identity({
-		type: 'user',
-		uid: uid,
-		components: [ { name: 'uid', value: uid } ]
-	}));
-};
-
-Identity.forEmail = function (email) {
-	assert.string(email, 'email');
-	return (new Identity({
-		type: 'email',
-		email: email,
-		components: [ { name: 'mail', value: email } ]
-	}));
-};
-
-Identity.parseDN = function (dn) {
-	assert.string(dn, 'dn');
-	var parts = dn.split(',');
-	var cmps = parts.map(function (c) {
-		c = c.trim();
-		var eqPos = c.indexOf('=');
-		var name = c.slice(0, eqPos).toLowerCase();
-		var value = c.slice(eqPos + 1);
-		return ({ name: name, value: value });
-	});
-	return (new Identity({ components: cmps }));
-};
-
-Identity.parseAsn1 = function (der, top) {
-	var components = [];
-	der.readSequence(top);
-	var end = der.offset + der.length;
-	while (der.offset < end) {
-		der.readSequence(asn1.Ber.Constructor | asn1.Ber.Set);
-		var after = der.offset + der.length;
-		der.readSequence();
-		var oid = der.readOID();
-		var type = der.peek();
-		var value;
-		switch (type) {
-		case asn1.Ber.PrintableString:
-		case asn1.Ber.IA5String:
-		case asn1.Ber.OctetString:
-		case asn1.Ber.T61String:
-			value = der.readString(type);
-			break;
-		case asn1.Ber.Utf8String:
-			value = der.readString(type, true);
-			value = value.toString('utf8');
-			break;
-		case asn1.Ber.CharacterString:
-		case asn1.Ber.BMPString:
-			value = der.readString(type, true);
-			value = value.toString('utf16le');
-			break;
-		default:
-			throw (new Error('Unknown asn1 type ' + type));
-		}
-		components.push({ oid: oid, value: value });
-		der._offset = after;
-	}
-	der._offset = end;
-	return (new Identity({
-		components: components
-	}));
-};
-
-Identity.isIdentity = function (obj, ver) {
-	return (utils.isCompatible(obj, Identity, ver));
-};
-
-/*
- * API versions for Identity:
- * [1,0] -- initial ver
- */
-Identity.prototype._sshpkApiVersion = [1, 0];
-
-Identity._oldVersionDetect = function (obj) {
-	return ([1, 0]);
-};
-
-
-/***/ }),
-/* 65 */
-/***/ (function(module, exports) {
-
-module.exports = require("fs");
-
-/***/ }),
-/* 66 */
-/***/ (function(module, exports) {
-
-module.exports = require("https");
-
-/***/ }),
-/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module) {(function (global, factory) {
@@ -15684,34 +14038,33 @@ function sortBy (coll, iteratee, callback) {
  * });
  */
 function timeout(asyncFn, milliseconds, info) {
-    var originalCallback, timer;
-    var timedOut = false;
-
-    function injectedCallback() {
-        if (!timedOut) {
-            originalCallback.apply(null, arguments);
-            clearTimeout(timer);
-        }
-    }
-
-    function timeoutCallback() {
-        var name = asyncFn.name || 'anonymous';
-        var error  = new Error('Callback function "' + name + '" timed out.');
-        error.code = 'ETIMEDOUT';
-        if (info) {
-            error.info = info;
-        }
-        timedOut = true;
-        originalCallback(error);
-    }
-
     var fn = wrapAsync(asyncFn);
 
-    return initialParams(function (args, origCallback) {
-        originalCallback = origCallback;
+    return initialParams(function (args, callback) {
+        var timedOut = false;
+        var timer;
+
+        function timeoutCallback() {
+            var name = asyncFn.name || 'anonymous';
+            var error  = new Error('Callback function "' + name + '" timed out.');
+            error.code = 'ETIMEDOUT';
+            if (info) {
+                error.info = info;
+            }
+            timedOut = true;
+            callback(error);
+        }
+
+        args.push(function () {
+            if (!timedOut) {
+                callback.apply(null, arguments);
+                clearTimeout(timer);
+            }
+        });
+
         // setup timer and call original function
         timer = setTimeout(timeoutCallback, milliseconds);
-        fn.apply(null, args.concat(injectedCallback));
+        fn.apply(null, args);
     });
 }
 
@@ -16368,6 +14721,1652 @@ Object.defineProperty(exports, '__esModule', { value: true });
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(126)(module)))
 
 /***/ }),
+/* 52 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 0 -> Array#forEach
+// 1 -> Array#map
+// 2 -> Array#filter
+// 3 -> Array#some
+// 4 -> Array#every
+// 5 -> Array#find
+// 6 -> Array#findIndex
+var ctx      = __webpack_require__(23)
+  , IObject  = __webpack_require__(101)
+  , toObject = __webpack_require__(37)
+  , toLength = __webpack_require__(19)
+  , asc      = __webpack_require__(367);
+module.exports = function(TYPE, $create){
+  var IS_MAP        = TYPE == 1
+    , IS_FILTER     = TYPE == 2
+    , IS_SOME       = TYPE == 3
+    , IS_EVERY      = TYPE == 4
+    , IS_FIND_INDEX = TYPE == 6
+    , NO_HOLES      = TYPE == 5 || IS_FIND_INDEX
+    , create        = $create || asc;
+  return function($this, callbackfn, that){
+    var O      = toObject($this)
+      , self   = IObject(O)
+      , f      = ctx(callbackfn, that, 3)
+      , length = toLength(self.length)
+      , index  = 0
+      , result = IS_MAP ? create($this, length) : IS_FILTER ? create($this, 0) : undefined
+      , val, res;
+    for(;length > index; index++)if(NO_HOLES || index in self){
+      val = self[index];
+      res = f(val, index, O);
+      if(TYPE){
+        if(IS_MAP)result[index] = res;            // map
+        else if(res)switch(TYPE){
+          case 3: return true;                    // some
+          case 5: return val;                     // find
+          case 6: return index;                   // findIndex
+          case 2: result.push(val);               // filter
+        } else if(IS_EVERY)return false;          // every
+      }
+    }
+    return IS_FIND_INDEX ? -1 : IS_SOME || IS_EVERY ? IS_EVERY : result;
+  };
+};
+
+/***/ }),
+/* 53 */
+/***/ (function(module, exports) {
+
+var core = module.exports = {version: '2.4.0'};
+if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
+
+/***/ }),
+/* 54 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var META     = __webpack_require__(38)('meta')
+  , isObject = __webpack_require__(8)
+  , has      = __webpack_require__(16)
+  , setDesc  = __webpack_require__(11).f
+  , id       = 0;
+var isExtensible = Object.isExtensible || function(){
+  return true;
+};
+var FREEZE = !__webpack_require__(10)(function(){
+  return isExtensible(Object.preventExtensions({}));
+});
+var setMeta = function(it){
+  setDesc(it, META, {value: {
+    i: 'O' + ++id, // object ID
+    w: {}          // weak collections IDs
+  }});
+};
+var fastKey = function(it, create){
+  // return primitive with prefix
+  if(!isObject(it))return typeof it == 'symbol' ? it : (typeof it == 'string' ? 'S' : 'P') + it;
+  if(!has(it, META)){
+    // can't set metadata to uncaught frozen object
+    if(!isExtensible(it))return 'F';
+    // not necessary to add metadata
+    if(!create)return 'E';
+    // add missing metadata
+    setMeta(it);
+  // return object ID
+  } return it[META].i;
+};
+var getWeak = function(it, create){
+  if(!has(it, META)){
+    // can't set metadata to uncaught frozen object
+    if(!isExtensible(it))return true;
+    // not necessary to add metadata
+    if(!create)return false;
+    // add missing metadata
+    setMeta(it);
+  // return hash weak collections IDs
+  } return it[META].w;
+};
+// add metadata on freeze-family methods calling
+var onFreeze = function(it){
+  if(FREEZE && meta.NEED && isExtensible(it) && !has(it, META))setMeta(it);
+  return it;
+};
+var meta = module.exports = {
+  KEY:      META,
+  NEED:     false,
+  fastKey:  fastKey,
+  getWeak:  getWeak,
+  onFreeze: onFreeze
+};
+
+/***/ }),
+/* 55 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
+var anObject    = __webpack_require__(6)
+  , dPs         = __webpack_require__(375)
+  , enumBugKeys = __webpack_require__(99)
+  , IE_PROTO    = __webpack_require__(107)('IE_PROTO')
+  , Empty       = function(){ /* empty */ }
+  , PROTOTYPE   = 'prototype';
+
+// Create object with fake `null` prototype: use iframe Object with cleared prototype
+var createDict = function(){
+  // Thrash, waste and sodomy: IE GC bug
+  var iframe = __webpack_require__(98)('iframe')
+    , i      = enumBugKeys.length
+    , lt     = '<'
+    , gt     = '>'
+    , iframeDocument;
+  iframe.style.display = 'none';
+  __webpack_require__(150).appendChild(iframe);
+  iframe.src = 'javascript:'; // eslint-disable-line no-script-url
+  // createDict = iframe.contentWindow.Object;
+  // html.removeChild(iframe);
+  iframeDocument = iframe.contentWindow.document;
+  iframeDocument.open();
+  iframeDocument.write(lt + 'script' + gt + 'document.F=Object' + lt + '/script' + gt);
+  iframeDocument.close();
+  createDict = iframeDocument.F;
+  while(i--)delete createDict[PROTOTYPE][enumBugKeys[i]];
+  return createDict();
+};
+
+module.exports = Object.create || function create(O, Properties){
+  var result;
+  if(O !== null){
+    Empty[PROTOTYPE] = anObject(O);
+    result = new Empty;
+    Empty[PROTOTYPE] = null;
+    // add "__proto__" for Object.getPrototypeOf polyfill
+    result[IE_PROTO] = O;
+  } else result = createDict();
+  return Properties === undefined ? result : dPs(result, Properties);
+};
+
+
+/***/ }),
+/* 56 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
+var $keys      = __webpack_require__(160)
+  , hiddenKeys = __webpack_require__(99).concat('length', 'prototype');
+
+exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O){
+  return $keys(O, hiddenKeys);
+};
+
+/***/ }),
+/* 57 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
+var has         = __webpack_require__(16)
+  , toObject    = __webpack_require__(37)
+  , IE_PROTO    = __webpack_require__(107)('IE_PROTO')
+  , ObjectProto = Object.prototype;
+
+module.exports = Object.getPrototypeOf || function(O){
+  O = toObject(O);
+  if(has(O, IE_PROTO))return O[IE_PROTO];
+  if(typeof O.constructor == 'function' && O instanceof O.constructor){
+    return O.constructor.prototype;
+  } return O instanceof Object ? ObjectProto : null;
+};
+
+/***/ }),
+/* 58 */
+/***/ (function(module, exports) {
+
+exports.f = {}.propertyIsEnumerable;
+
+/***/ }),
+/* 59 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var toInteger = __webpack_require__(50)
+  , max       = Math.max
+  , min       = Math.min;
+module.exports = function(index, length){
+  index = toInteger(index);
+  return index < 0 ? max(index + length, 0) : min(index, length);
+};
+
+/***/ }),
+/* 60 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 7.1.1 ToPrimitive(input [, PreferredType])
+var isObject = __webpack_require__(8);
+// instead of the ES6 spec version, we didn't implement @@toPrimitive case
+// and the second argument - flag - preferred type is a string
+module.exports = function(it, S){
+  if(!isObject(it))return it;
+  var fn, val;
+  if(S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
+  if(typeof (fn = it.valueOf) == 'function' && !isObject(val = fn.call(it)))return val;
+  if(!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
+  throw TypeError("Can't convert object to primitive value");
+};
+
+/***/ }),
+/* 61 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var buffer = __webpack_require__(21)
+
+if (Buffer.from && Buffer.alloc && Buffer.allocUnsafe && Buffer.allocUnsafeSlow) {
+  module.exports = buffer
+} else {
+  // Copy properties from require('buffer')
+  Object.keys(buffer).forEach(function (prop) {
+    exports[prop] = buffer[prop]
+  })
+  exports.Buffer = SafeBuffer
+}
+
+function SafeBuffer (arg, encodingOrOffset, length) {
+  return Buffer(arg, encodingOrOffset, length)
+}
+
+// Copy static methods from Buffer
+Object.keys(Buffer).forEach(function (prop) {
+  SafeBuffer[prop] = Buffer[prop]
+})
+
+SafeBuffer.from = function (arg, encodingOrOffset, length) {
+  if (typeof arg === 'number') {
+    throw new TypeError('Argument must not be a number')
+  }
+  return Buffer(arg, encodingOrOffset, length)
+}
+
+SafeBuffer.alloc = function (size, fill, encoding) {
+  if (typeof size !== 'number') {
+    throw new TypeError('Argument must be a number')
+  }
+  var buf = Buffer(size)
+  if (fill !== undefined) {
+    if (typeof encoding === 'string') {
+      buf.fill(fill, encoding)
+    } else {
+      buf.fill(fill)
+    }
+  } else {
+    buf.fill(0)
+  }
+  return buf
+}
+
+SafeBuffer.allocUnsafe = function (size) {
+  if (typeof size !== 'number') {
+    throw new TypeError('Argument must be a number')
+  }
+  return Buffer(size)
+}
+
+SafeBuffer.allocUnsafeSlow = function (size) {
+  if (typeof size !== 'number') {
+    throw new TypeError('Argument must be a number')
+  }
+  return buffer.SlowBuffer(size)
+}
+
+
+/***/ }),
+/* 62 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// Copyright 2016 Joyent, Inc.
+
+module.exports = Certificate;
+
+var assert = __webpack_require__(5);
+var algs = __webpack_require__(12);
+var crypto = __webpack_require__(2);
+var Fingerprint = __webpack_require__(63);
+var Signature = __webpack_require__(26);
+var errs = __webpack_require__(25);
+var util = __webpack_require__(3);
+var utils = __webpack_require__(9);
+var Key = __webpack_require__(13);
+var PrivateKey = __webpack_require__(14);
+var Identity = __webpack_require__(65);
+
+var formats = {};
+formats['openssh'] = __webpack_require__(569);
+formats['x509'] = __webpack_require__(310);
+formats['pem'] = __webpack_require__(570);
+
+var CertificateParseError = errs.CertificateParseError;
+var InvalidAlgorithmError = errs.InvalidAlgorithmError;
+
+function Certificate(opts) {
+	assert.object(opts, 'options');
+	assert.arrayOfObject(opts.subjects, 'options.subjects');
+	utils.assertCompatible(opts.subjects[0], Identity, [1, 0],
+	    'options.subjects');
+	utils.assertCompatible(opts.subjectKey, Key, [1, 0],
+	    'options.subjectKey');
+	utils.assertCompatible(opts.issuer, Identity, [1, 0], 'options.issuer');
+	if (opts.issuerKey !== undefined) {
+		utils.assertCompatible(opts.issuerKey, Key, [1, 0],
+		    'options.issuerKey');
+	}
+	assert.object(opts.signatures, 'options.signatures');
+	assert.buffer(opts.serial, 'options.serial');
+	assert.date(opts.validFrom, 'options.validFrom');
+	assert.date(opts.validUntil, 'optons.validUntil');
+
+	assert.optionalArrayOfString(opts.purposes, 'options.purposes');
+
+	this._hashCache = {};
+
+	this.subjects = opts.subjects;
+	this.issuer = opts.issuer;
+	this.subjectKey = opts.subjectKey;
+	this.issuerKey = opts.issuerKey;
+	this.signatures = opts.signatures;
+	this.serial = opts.serial;
+	this.validFrom = opts.validFrom;
+	this.validUntil = opts.validUntil;
+	this.purposes = opts.purposes;
+}
+
+Certificate.formats = formats;
+
+Certificate.prototype.toBuffer = function (format, options) {
+	if (format === undefined)
+		format = 'x509';
+	assert.string(format, 'format');
+	assert.object(formats[format], 'formats[format]');
+	assert.optionalObject(options, 'options');
+
+	return (formats[format].write(this, options));
+};
+
+Certificate.prototype.toString = function (format, options) {
+	if (format === undefined)
+		format = 'pem';
+	return (this.toBuffer(format, options).toString());
+};
+
+Certificate.prototype.fingerprint = function (algo) {
+	if (algo === undefined)
+		algo = 'sha256';
+	assert.string(algo, 'algorithm');
+	var opts = {
+		type: 'certificate',
+		hash: this.hash(algo),
+		algorithm: algo
+	};
+	return (new Fingerprint(opts));
+};
+
+Certificate.prototype.hash = function (algo) {
+	assert.string(algo, 'algorithm');
+	algo = algo.toLowerCase();
+	if (algs.hashAlgs[algo] === undefined)
+		throw (new InvalidAlgorithmError(algo));
+
+	if (this._hashCache[algo])
+		return (this._hashCache[algo]);
+
+	var hash = crypto.createHash(algo).
+	    update(this.toBuffer('x509')).digest();
+	this._hashCache[algo] = hash;
+	return (hash);
+};
+
+Certificate.prototype.isExpired = function (when) {
+	if (when === undefined)
+		when = new Date();
+	return (!((when.getTime() >= this.validFrom.getTime()) &&
+		(when.getTime() < this.validUntil.getTime())));
+};
+
+Certificate.prototype.isSignedBy = function (issuerCert) {
+	utils.assertCompatible(issuerCert, Certificate, [1, 0], 'issuer');
+
+	if (!this.issuer.equals(issuerCert.subjects[0]))
+		return (false);
+	if (this.issuer.purposes && this.issuer.purposes.length > 0 &&
+	    this.issuer.purposes.indexOf('ca') === -1) {
+		return (false);
+	}
+
+	return (this.isSignedByKey(issuerCert.subjectKey));
+};
+
+Certificate.prototype.isSignedByKey = function (issuerKey) {
+	utils.assertCompatible(issuerKey, Key, [1, 2], 'issuerKey');
+
+	if (this.issuerKey !== undefined) {
+		return (this.issuerKey.
+		    fingerprint('sha512').matches(issuerKey));
+	}
+
+	var fmt = Object.keys(this.signatures)[0];
+	var valid = formats[fmt].verify(this, issuerKey);
+	if (valid)
+		this.issuerKey = issuerKey;
+	return (valid);
+};
+
+Certificate.prototype.signWith = function (key) {
+	utils.assertCompatible(key, PrivateKey, [1, 2], 'key');
+	var fmts = Object.keys(formats);
+	var didOne = false;
+	for (var i = 0; i < fmts.length; ++i) {
+		if (fmts[i] !== 'pem') {
+			var ret = formats[fmts[i]].sign(this, key);
+			if (ret === true)
+				didOne = true;
+		}
+	}
+	if (!didOne) {
+		throw (new Error('Failed to sign the certificate for any ' +
+		    'available certificate formats'));
+	}
+};
+
+Certificate.createSelfSigned = function (subjectOrSubjects, key, options) {
+	var subjects;
+	if (Array.isArray(subjectOrSubjects))
+		subjects = subjectOrSubjects;
+	else
+		subjects = [subjectOrSubjects];
+
+	assert.arrayOfObject(subjects);
+	subjects.forEach(function (subject) {
+		utils.assertCompatible(subject, Identity, [1, 0], 'subject');
+	});
+
+	utils.assertCompatible(key, PrivateKey, [1, 2], 'private key');
+
+	assert.optionalObject(options, 'options');
+	if (options === undefined)
+		options = {};
+	assert.optionalObject(options.validFrom, 'options.validFrom');
+	assert.optionalObject(options.validUntil, 'options.validUntil');
+	var validFrom = options.validFrom;
+	var validUntil = options.validUntil;
+	if (validFrom === undefined)
+		validFrom = new Date();
+	if (validUntil === undefined) {
+		assert.optionalNumber(options.lifetime, 'options.lifetime');
+		var lifetime = options.lifetime;
+		if (lifetime === undefined)
+			lifetime = 10*365*24*3600;
+		validUntil = new Date();
+		validUntil.setTime(validUntil.getTime() + lifetime*1000);
+	}
+	assert.optionalBuffer(options.serial, 'options.serial');
+	var serial = options.serial;
+	if (serial === undefined)
+		serial = new Buffer('0000000000000001', 'hex');
+
+	var purposes = options.purposes;
+	if (purposes === undefined)
+		purposes = [];
+
+	if (purposes.indexOf('signature') === -1)
+		purposes.push('signature');
+
+	/* Self-signed certs are always CAs. */
+	if (purposes.indexOf('ca') === -1)
+		purposes.push('ca');
+	if (purposes.indexOf('crl') === -1)
+		purposes.push('crl');
+
+	/*
+	 * If we weren't explicitly given any other purposes, do the sensible
+	 * thing and add some basic ones depending on the subject type.
+	 */
+	if (purposes.length <= 3) {
+		var hostSubjects = subjects.filter(function (subject) {
+			return (subject.type === 'host');
+		});
+		var userSubjects = subjects.filter(function (subject) {
+			return (subject.type === 'user');
+		});
+		if (hostSubjects.length > 0) {
+			if (purposes.indexOf('serverAuth') === -1)
+				purposes.push('serverAuth');
+		}
+		if (userSubjects.length > 0) {
+			if (purposes.indexOf('clientAuth') === -1)
+				purposes.push('clientAuth');
+		}
+		if (userSubjects.length > 0 || hostSubjects.length > 0) {
+			if (purposes.indexOf('keyAgreement') === -1)
+				purposes.push('keyAgreement');
+			if (key.type === 'rsa' &&
+			    purposes.indexOf('encryption') === -1)
+				purposes.push('encryption');
+		}
+	}
+
+	var cert = new Certificate({
+		subjects: subjects,
+		issuer: subjects[0],
+		subjectKey: key.toPublic(),
+		issuerKey: key.toPublic(),
+		signatures: {},
+		serial: serial,
+		validFrom: validFrom,
+		validUntil: validUntil,
+		purposes: purposes
+	});
+	cert.signWith(key);
+
+	return (cert);
+};
+
+Certificate.create =
+    function (subjectOrSubjects, key, issuer, issuerKey, options) {
+	var subjects;
+	if (Array.isArray(subjectOrSubjects))
+		subjects = subjectOrSubjects;
+	else
+		subjects = [subjectOrSubjects];
+
+	assert.arrayOfObject(subjects);
+	subjects.forEach(function (subject) {
+		utils.assertCompatible(subject, Identity, [1, 0], 'subject');
+	});
+
+	utils.assertCompatible(key, Key, [1, 0], 'key');
+	if (PrivateKey.isPrivateKey(key))
+		key = key.toPublic();
+	utils.assertCompatible(issuer, Identity, [1, 0], 'issuer');
+	utils.assertCompatible(issuerKey, PrivateKey, [1, 2], 'issuer key');
+
+	assert.optionalObject(options, 'options');
+	if (options === undefined)
+		options = {};
+	assert.optionalObject(options.validFrom, 'options.validFrom');
+	assert.optionalObject(options.validUntil, 'options.validUntil');
+	var validFrom = options.validFrom;
+	var validUntil = options.validUntil;
+	if (validFrom === undefined)
+		validFrom = new Date();
+	if (validUntil === undefined) {
+		assert.optionalNumber(options.lifetime, 'options.lifetime');
+		var lifetime = options.lifetime;
+		if (lifetime === undefined)
+			lifetime = 10*365*24*3600;
+		validUntil = new Date();
+		validUntil.setTime(validUntil.getTime() + lifetime*1000);
+	}
+	assert.optionalBuffer(options.serial, 'options.serial');
+	var serial = options.serial;
+	if (serial === undefined)
+		serial = new Buffer('0000000000000001', 'hex');
+
+	var purposes = options.purposes;
+	if (purposes === undefined)
+		purposes = [];
+
+	if (purposes.indexOf('signature') === -1)
+		purposes.push('signature');
+
+	if (options.ca === true) {
+		if (purposes.indexOf('ca') === -1)
+			purposes.push('ca');
+		if (purposes.indexOf('crl') === -1)
+			purposes.push('crl');
+	}
+
+	var hostSubjects = subjects.filter(function (subject) {
+		return (subject.type === 'host');
+	});
+	var userSubjects = subjects.filter(function (subject) {
+		return (subject.type === 'user');
+	});
+	if (hostSubjects.length > 0) {
+		if (purposes.indexOf('serverAuth') === -1)
+			purposes.push('serverAuth');
+	}
+	if (userSubjects.length > 0) {
+		if (purposes.indexOf('clientAuth') === -1)
+			purposes.push('clientAuth');
+	}
+	if (userSubjects.length > 0 || hostSubjects.length > 0) {
+		if (purposes.indexOf('keyAgreement') === -1)
+			purposes.push('keyAgreement');
+		if (key.type === 'rsa' &&
+		    purposes.indexOf('encryption') === -1)
+			purposes.push('encryption');
+	}
+
+	var cert = new Certificate({
+		subjects: subjects,
+		issuer: issuer,
+		subjectKey: key,
+		issuerKey: issuerKey.toPublic(),
+		signatures: {},
+		serial: serial,
+		validFrom: validFrom,
+		validUntil: validUntil,
+		purposes: purposes
+	});
+	cert.signWith(issuerKey);
+
+	return (cert);
+};
+
+Certificate.parse = function (data, format, options) {
+	if (typeof (data) !== 'string')
+		assert.buffer(data, 'data');
+	if (format === undefined)
+		format = 'auto';
+	assert.string(format, 'format');
+	if (typeof (options) === 'string')
+		options = { filename: options };
+	assert.optionalObject(options, 'options');
+	if (options === undefined)
+		options = {};
+	assert.optionalString(options.filename, 'options.filename');
+	if (options.filename === undefined)
+		options.filename = '(unnamed)';
+
+	assert.object(formats[format], 'formats[format]');
+
+	try {
+		var k = formats[format].read(data, options);
+		return (k);
+	} catch (e) {
+		throw (new CertificateParseError(options.filename, format, e));
+	}
+};
+
+Certificate.isCertificate = function (obj, ver) {
+	return (utils.isCompatible(obj, Certificate, ver));
+};
+
+/*
+ * API versions for Certificate:
+ * [1,0] -- initial ver
+ */
+Certificate.prototype._sshpkApiVersion = [1, 0];
+
+Certificate._oldVersionDetect = function (obj) {
+	return ([1, 0]);
+};
+
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// Copyright 2015 Joyent, Inc.
+
+module.exports = Fingerprint;
+
+var assert = __webpack_require__(5);
+var algs = __webpack_require__(12);
+var crypto = __webpack_require__(2);
+var errs = __webpack_require__(25);
+var Key = __webpack_require__(13);
+var Certificate = __webpack_require__(62);
+var utils = __webpack_require__(9);
+
+var FingerprintFormatError = errs.FingerprintFormatError;
+var InvalidAlgorithmError = errs.InvalidAlgorithmError;
+
+function Fingerprint(opts) {
+	assert.object(opts, 'options');
+	assert.string(opts.type, 'options.type');
+	assert.buffer(opts.hash, 'options.hash');
+	assert.string(opts.algorithm, 'options.algorithm');
+
+	this.algorithm = opts.algorithm.toLowerCase();
+	if (algs.hashAlgs[this.algorithm] !== true)
+		throw (new InvalidAlgorithmError(this.algorithm));
+
+	this.hash = opts.hash;
+	this.type = opts.type;
+}
+
+Fingerprint.prototype.toString = function (format) {
+	if (format === undefined) {
+		if (this.algorithm === 'md5')
+			format = 'hex';
+		else
+			format = 'base64';
+	}
+	assert.string(format);
+
+	switch (format) {
+	case 'hex':
+		return (addColons(this.hash.toString('hex')));
+	case 'base64':
+		return (sshBase64Format(this.algorithm,
+		    this.hash.toString('base64')));
+	default:
+		throw (new FingerprintFormatError(undefined, format));
+	}
+};
+
+Fingerprint.prototype.matches = function (other) {
+	assert.object(other, 'key or certificate');
+	if (this.type === 'key') {
+		utils.assertCompatible(other, Key, [1, 0], 'key');
+	} else {
+		utils.assertCompatible(other, Certificate, [1, 0],
+		    'certificate');
+	}
+
+	var theirHash = other.hash(this.algorithm);
+	var theirHash2 = crypto.createHash(this.algorithm).
+	    update(theirHash).digest('base64');
+
+	if (this.hash2 === undefined)
+		this.hash2 = crypto.createHash(this.algorithm).
+		    update(this.hash).digest('base64');
+
+	return (this.hash2 === theirHash2);
+};
+
+Fingerprint.parse = function (fp, options) {
+	assert.string(fp, 'fingerprint');
+
+	var alg, hash, enAlgs;
+	if (Array.isArray(options)) {
+		enAlgs = options;
+		options = {};
+	}
+	assert.optionalObject(options, 'options');
+	if (options === undefined)
+		options = {};
+	if (options.enAlgs !== undefined)
+		enAlgs = options.enAlgs;
+	assert.optionalArrayOfString(enAlgs, 'algorithms');
+
+	var parts = fp.split(':');
+	if (parts.length == 2) {
+		alg = parts[0].toLowerCase();
+		/*JSSTYLED*/
+		var base64RE = /^[A-Za-z0-9+\/=]+$/;
+		if (!base64RE.test(parts[1]))
+			throw (new FingerprintFormatError(fp));
+		try {
+			hash = new Buffer(parts[1], 'base64');
+		} catch (e) {
+			throw (new FingerprintFormatError(fp));
+		}
+	} else if (parts.length > 2) {
+		alg = 'md5';
+		if (parts[0].toLowerCase() === 'md5')
+			parts = parts.slice(1);
+		parts = parts.join('');
+		/*JSSTYLED*/
+		var md5RE = /^[a-fA-F0-9]+$/;
+		if (!md5RE.test(parts))
+			throw (new FingerprintFormatError(fp));
+		try {
+			hash = new Buffer(parts, 'hex');
+		} catch (e) {
+			throw (new FingerprintFormatError(fp));
+		}
+	}
+
+	if (alg === undefined)
+		throw (new FingerprintFormatError(fp));
+
+	if (algs.hashAlgs[alg] === undefined)
+		throw (new InvalidAlgorithmError(alg));
+
+	if (enAlgs !== undefined) {
+		enAlgs = enAlgs.map(function (a) { return a.toLowerCase(); });
+		if (enAlgs.indexOf(alg) === -1)
+			throw (new InvalidAlgorithmError(alg));
+	}
+
+	return (new Fingerprint({
+		algorithm: alg,
+		hash: hash,
+		type: options.type || 'key'
+	}));
+};
+
+function addColons(s) {
+	/*JSSTYLED*/
+	return (s.replace(/(.{2})(?=.)/g, '$1:'));
+}
+
+function base64Strip(s) {
+	/*JSSTYLED*/
+	return (s.replace(/=*$/, ''));
+}
+
+function sshBase64Format(alg, h) {
+	return (alg.toUpperCase() + ':' + base64Strip(h));
+}
+
+Fingerprint.isFingerprint = function (obj, ver) {
+	return (utils.isCompatible(obj, Fingerprint, ver));
+};
+
+/*
+ * API versions for Fingerprint:
+ * [1,0] -- initial ver
+ * [1,1] -- first tagged ver
+ */
+Fingerprint.prototype._sshpkApiVersion = [1, 1];
+
+Fingerprint._oldVersionDetect = function (obj) {
+	assert.func(obj.toString);
+	assert.func(obj.matches);
+	return ([1, 0]);
+};
+
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// Copyright 2015 Joyent, Inc.
+
+module.exports = {
+	read: read,
+	readPkcs8: readPkcs8,
+	write: write,
+	writePkcs8: writePkcs8,
+
+	readECDSACurve: readECDSACurve,
+	writeECDSACurve: writeECDSACurve
+};
+
+var assert = __webpack_require__(5);
+var asn1 = __webpack_require__(27);
+var algs = __webpack_require__(12);
+var utils = __webpack_require__(9);
+var Key = __webpack_require__(13);
+var PrivateKey = __webpack_require__(14);
+var pem = __webpack_require__(33);
+
+function read(buf, options) {
+	return (pem.read(buf, options, 'pkcs8'));
+}
+
+function write(key, options) {
+	return (pem.write(key, options, 'pkcs8'));
+}
+
+/* Helper to read in a single mpint */
+function readMPInt(der, nm) {
+	assert.strictEqual(der.peek(), asn1.Ber.Integer,
+	    nm + ' is not an Integer');
+	return (utils.mpNormalize(der.readString(asn1.Ber.Integer, true)));
+}
+
+function readPkcs8(alg, type, der) {
+	/* Private keys in pkcs#8 format have a weird extra int */
+	if (der.peek() === asn1.Ber.Integer) {
+		assert.strictEqual(type, 'private',
+		    'unexpected Integer at start of public key');
+		der.readString(asn1.Ber.Integer, true);
+	}
+
+	der.readSequence();
+	var next = der.offset + der.length;
+
+	var oid = der.readOID();
+	switch (oid) {
+	case '1.2.840.113549.1.1.1':
+		der._offset = next;
+		if (type === 'public')
+			return (readPkcs8RSAPublic(der));
+		else
+			return (readPkcs8RSAPrivate(der));
+	case '1.2.840.10040.4.1':
+		if (type === 'public')
+			return (readPkcs8DSAPublic(der));
+		else
+			return (readPkcs8DSAPrivate(der));
+	case '1.2.840.10045.2.1':
+		if (type === 'public')
+			return (readPkcs8ECDSAPublic(der));
+		else
+			return (readPkcs8ECDSAPrivate(der));
+	default:
+		throw (new Error('Unknown key type OID ' + oid));
+	}
+}
+
+function readPkcs8RSAPublic(der) {
+	// bit string sequence
+	der.readSequence(asn1.Ber.BitString);
+	der.readByte();
+	der.readSequence();
+
+	// modulus
+	var n = readMPInt(der, 'modulus');
+	var e = readMPInt(der, 'exponent');
+
+	// now, make the key
+	var key = {
+		type: 'rsa',
+		source: der.originalInput,
+		parts: [
+			{ name: 'e', data: e },
+			{ name: 'n', data: n }
+		]
+	};
+
+	return (new Key(key));
+}
+
+function readPkcs8RSAPrivate(der) {
+	der.readSequence(asn1.Ber.OctetString);
+	der.readSequence();
+
+	var ver = readMPInt(der, 'version');
+	assert.equal(ver[0], 0x0, 'unknown RSA private key version');
+
+	// modulus then public exponent
+	var n = readMPInt(der, 'modulus');
+	var e = readMPInt(der, 'public exponent');
+	var d = readMPInt(der, 'private exponent');
+	var p = readMPInt(der, 'prime1');
+	var q = readMPInt(der, 'prime2');
+	var dmodp = readMPInt(der, 'exponent1');
+	var dmodq = readMPInt(der, 'exponent2');
+	var iqmp = readMPInt(der, 'iqmp');
+
+	// now, make the key
+	var key = {
+		type: 'rsa',
+		parts: [
+			{ name: 'n', data: n },
+			{ name: 'e', data: e },
+			{ name: 'd', data: d },
+			{ name: 'iqmp', data: iqmp },
+			{ name: 'p', data: p },
+			{ name: 'q', data: q },
+			{ name: 'dmodp', data: dmodp },
+			{ name: 'dmodq', data: dmodq }
+		]
+	};
+
+	return (new PrivateKey(key));
+}
+
+function readPkcs8DSAPublic(der) {
+	der.readSequence();
+
+	var p = readMPInt(der, 'p');
+	var q = readMPInt(der, 'q');
+	var g = readMPInt(der, 'g');
+
+	// bit string sequence
+	der.readSequence(asn1.Ber.BitString);
+	der.readByte();
+
+	var y = readMPInt(der, 'y');
+
+	// now, make the key
+	var key = {
+		type: 'dsa',
+		parts: [
+			{ name: 'p', data: p },
+			{ name: 'q', data: q },
+			{ name: 'g', data: g },
+			{ name: 'y', data: y }
+		]
+	};
+
+	return (new Key(key));
+}
+
+function readPkcs8DSAPrivate(der) {
+	der.readSequence();
+
+	var p = readMPInt(der, 'p');
+	var q = readMPInt(der, 'q');
+	var g = readMPInt(der, 'g');
+
+	der.readSequence(asn1.Ber.OctetString);
+	var x = readMPInt(der, 'x');
+
+	/* The pkcs#8 format does not include the public key */
+	var y = utils.calculateDSAPublic(g, p, x);
+
+	var key = {
+		type: 'dsa',
+		parts: [
+			{ name: 'p', data: p },
+			{ name: 'q', data: q },
+			{ name: 'g', data: g },
+			{ name: 'y', data: y },
+			{ name: 'x', data: x }
+		]
+	};
+
+	return (new PrivateKey(key));
+}
+
+function readECDSACurve(der) {
+	var curveName, curveNames;
+	var j, c, cd;
+
+	if (der.peek() === asn1.Ber.OID) {
+		var oid = der.readOID();
+
+		curveNames = Object.keys(algs.curves);
+		for (j = 0; j < curveNames.length; ++j) {
+			c = curveNames[j];
+			cd = algs.curves[c];
+			if (cd.pkcs8oid === oid) {
+				curveName = c;
+				break;
+			}
+		}
+
+	} else {
+		// ECParameters sequence
+		der.readSequence();
+		var version = der.readString(asn1.Ber.Integer, true);
+		assert.strictEqual(version[0], 1, 'ECDSA key not version 1');
+
+		var curve = {};
+
+		// FieldID sequence
+		der.readSequence();
+		var fieldTypeOid = der.readOID();
+		assert.strictEqual(fieldTypeOid, '1.2.840.10045.1.1',
+		    'ECDSA key is not from a prime-field');
+		var p = curve.p = utils.mpNormalize(
+		    der.readString(asn1.Ber.Integer, true));
+		/*
+		 * p always starts with a 1 bit, so count the zeros to get its
+		 * real size.
+		 */
+		curve.size = p.length * 8 - utils.countZeros(p);
+
+		// Curve sequence
+		der.readSequence();
+		curve.a = utils.mpNormalize(
+		    der.readString(asn1.Ber.OctetString, true));
+		curve.b = utils.mpNormalize(
+		    der.readString(asn1.Ber.OctetString, true));
+		if (der.peek() === asn1.Ber.BitString)
+			curve.s = der.readString(asn1.Ber.BitString, true);
+
+		// Combined Gx and Gy
+		curve.G = der.readString(asn1.Ber.OctetString, true);
+		assert.strictEqual(curve.G[0], 0x4,
+		    'uncompressed G is required');
+
+		curve.n = utils.mpNormalize(
+		    der.readString(asn1.Ber.Integer, true));
+		curve.h = utils.mpNormalize(
+		    der.readString(asn1.Ber.Integer, true));
+		assert.strictEqual(curve.h[0], 0x1, 'a cofactor=1 curve is ' +
+		    'required');
+
+		curveNames = Object.keys(algs.curves);
+		var ks = Object.keys(curve);
+		for (j = 0; j < curveNames.length; ++j) {
+			c = curveNames[j];
+			cd = algs.curves[c];
+			var equal = true;
+			for (var i = 0; i < ks.length; ++i) {
+				var k = ks[i];
+				if (cd[k] === undefined)
+					continue;
+				if (typeof (cd[k]) === 'object' &&
+				    cd[k].equals !== undefined) {
+					if (!cd[k].equals(curve[k])) {
+						equal = false;
+						break;
+					}
+				} else if (Buffer.isBuffer(cd[k])) {
+					if (cd[k].toString('binary')
+					    !== curve[k].toString('binary')) {
+						equal = false;
+						break;
+					}
+				} else {
+					if (cd[k] !== curve[k]) {
+						equal = false;
+						break;
+					}
+				}
+			}
+			if (equal) {
+				curveName = c;
+				break;
+			}
+		}
+	}
+	return (curveName);
+}
+
+function readPkcs8ECDSAPrivate(der) {
+	var curveName = readECDSACurve(der);
+	assert.string(curveName, 'a known elliptic curve');
+
+	der.readSequence(asn1.Ber.OctetString);
+	der.readSequence();
+
+	var version = readMPInt(der, 'version');
+	assert.equal(version[0], 1, 'unknown version of ECDSA key');
+
+	var d = der.readString(asn1.Ber.OctetString, true);
+	der.readSequence(0xa1);
+
+	var Q = der.readString(asn1.Ber.BitString, true);
+	Q = utils.ecNormalize(Q);
+
+	var key = {
+		type: 'ecdsa',
+		parts: [
+			{ name: 'curve', data: new Buffer(curveName) },
+			{ name: 'Q', data: Q },
+			{ name: 'd', data: d }
+		]
+	};
+
+	return (new PrivateKey(key));
+}
+
+function readPkcs8ECDSAPublic(der) {
+	var curveName = readECDSACurve(der);
+	assert.string(curveName, 'a known elliptic curve');
+
+	var Q = der.readString(asn1.Ber.BitString, true);
+	Q = utils.ecNormalize(Q);
+
+	var key = {
+		type: 'ecdsa',
+		parts: [
+			{ name: 'curve', data: new Buffer(curveName) },
+			{ name: 'Q', data: Q }
+		]
+	};
+
+	return (new Key(key));
+}
+
+function writePkcs8(der, key) {
+	der.startSequence();
+
+	if (PrivateKey.isPrivateKey(key)) {
+		var sillyInt = new Buffer(1);
+		sillyInt[0] = 0x0;
+		der.writeBuffer(sillyInt, asn1.Ber.Integer);
+	}
+
+	der.startSequence();
+	switch (key.type) {
+	case 'rsa':
+		der.writeOID('1.2.840.113549.1.1.1');
+		if (PrivateKey.isPrivateKey(key))
+			writePkcs8RSAPrivate(key, der);
+		else
+			writePkcs8RSAPublic(key, der);
+		break;
+	case 'dsa':
+		der.writeOID('1.2.840.10040.4.1');
+		if (PrivateKey.isPrivateKey(key))
+			writePkcs8DSAPrivate(key, der);
+		else
+			writePkcs8DSAPublic(key, der);
+		break;
+	case 'ecdsa':
+		der.writeOID('1.2.840.10045.2.1');
+		if (PrivateKey.isPrivateKey(key))
+			writePkcs8ECDSAPrivate(key, der);
+		else
+			writePkcs8ECDSAPublic(key, der);
+		break;
+	default:
+		throw (new Error('Unsupported key type: ' + key.type));
+	}
+
+	der.endSequence();
+}
+
+function writePkcs8RSAPrivate(key, der) {
+	der.writeNull();
+	der.endSequence();
+
+	der.startSequence(asn1.Ber.OctetString);
+	der.startSequence();
+
+	var version = new Buffer(1);
+	version[0] = 0;
+	der.writeBuffer(version, asn1.Ber.Integer);
+
+	der.writeBuffer(key.part.n.data, asn1.Ber.Integer);
+	der.writeBuffer(key.part.e.data, asn1.Ber.Integer);
+	der.writeBuffer(key.part.d.data, asn1.Ber.Integer);
+	der.writeBuffer(key.part.p.data, asn1.Ber.Integer);
+	der.writeBuffer(key.part.q.data, asn1.Ber.Integer);
+	if (!key.part.dmodp || !key.part.dmodq)
+		utils.addRSAMissing(key);
+	der.writeBuffer(key.part.dmodp.data, asn1.Ber.Integer);
+	der.writeBuffer(key.part.dmodq.data, asn1.Ber.Integer);
+	der.writeBuffer(key.part.iqmp.data, asn1.Ber.Integer);
+
+	der.endSequence();
+	der.endSequence();
+}
+
+function writePkcs8RSAPublic(key, der) {
+	der.writeNull();
+	der.endSequence();
+
+	der.startSequence(asn1.Ber.BitString);
+	der.writeByte(0x00);
+
+	der.startSequence();
+	der.writeBuffer(key.part.n.data, asn1.Ber.Integer);
+	der.writeBuffer(key.part.e.data, asn1.Ber.Integer);
+	der.endSequence();
+
+	der.endSequence();
+}
+
+function writePkcs8DSAPrivate(key, der) {
+	der.startSequence();
+	der.writeBuffer(key.part.p.data, asn1.Ber.Integer);
+	der.writeBuffer(key.part.q.data, asn1.Ber.Integer);
+	der.writeBuffer(key.part.g.data, asn1.Ber.Integer);
+	der.endSequence();
+
+	der.endSequence();
+
+	der.startSequence(asn1.Ber.OctetString);
+	der.writeBuffer(key.part.x.data, asn1.Ber.Integer);
+	der.endSequence();
+}
+
+function writePkcs8DSAPublic(key, der) {
+	der.startSequence();
+	der.writeBuffer(key.part.p.data, asn1.Ber.Integer);
+	der.writeBuffer(key.part.q.data, asn1.Ber.Integer);
+	der.writeBuffer(key.part.g.data, asn1.Ber.Integer);
+	der.endSequence();
+	der.endSequence();
+
+	der.startSequence(asn1.Ber.BitString);
+	der.writeByte(0x00);
+	der.writeBuffer(key.part.y.data, asn1.Ber.Integer);
+	der.endSequence();
+}
+
+function writeECDSACurve(key, der) {
+	var curve = algs.curves[key.curve];
+	if (curve.pkcs8oid) {
+		/* This one has a name in pkcs#8, so just write the oid */
+		der.writeOID(curve.pkcs8oid);
+
+	} else {
+		// ECParameters sequence
+		der.startSequence();
+
+		var version = new Buffer(1);
+		version.writeUInt8(1, 0);
+		der.writeBuffer(version, asn1.Ber.Integer);
+
+		// FieldID sequence
+		der.startSequence();
+		der.writeOID('1.2.840.10045.1.1'); // prime-field
+		der.writeBuffer(curve.p, asn1.Ber.Integer);
+		der.endSequence();
+
+		// Curve sequence
+		der.startSequence();
+		var a = curve.p;
+		if (a[0] === 0x0)
+			a = a.slice(1);
+		der.writeBuffer(a, asn1.Ber.OctetString);
+		der.writeBuffer(curve.b, asn1.Ber.OctetString);
+		der.writeBuffer(curve.s, asn1.Ber.BitString);
+		der.endSequence();
+
+		der.writeBuffer(curve.G, asn1.Ber.OctetString);
+		der.writeBuffer(curve.n, asn1.Ber.Integer);
+		var h = curve.h;
+		if (!h) {
+			h = new Buffer(1);
+			h[0] = 1;
+		}
+		der.writeBuffer(h, asn1.Ber.Integer);
+
+		// ECParameters
+		der.endSequence();
+	}
+}
+
+function writePkcs8ECDSAPublic(key, der) {
+	writeECDSACurve(key, der);
+	der.endSequence();
+
+	var Q = utils.ecNormalize(key.part.Q.data, true);
+	der.writeBuffer(Q, asn1.Ber.BitString);
+}
+
+function writePkcs8ECDSAPrivate(key, der) {
+	writeECDSACurve(key, der);
+	der.endSequence();
+
+	der.startSequence(asn1.Ber.OctetString);
+	der.startSequence();
+
+	var version = new Buffer(1);
+	version[0] = 1;
+	der.writeBuffer(version, asn1.Ber.Integer);
+
+	der.writeBuffer(key.part.d.data, asn1.Ber.OctetString);
+
+	der.startSequence(0xa1);
+	var Q = utils.ecNormalize(key.part.Q.data, true);
+	der.writeBuffer(Q, asn1.Ber.BitString);
+	der.endSequence();
+
+	der.endSequence();
+	der.endSequence();
+}
+
+
+/***/ }),
+/* 65 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// Copyright 2017 Joyent, Inc.
+
+module.exports = Identity;
+
+var assert = __webpack_require__(5);
+var algs = __webpack_require__(12);
+var crypto = __webpack_require__(2);
+var Fingerprint = __webpack_require__(63);
+var Signature = __webpack_require__(26);
+var errs = __webpack_require__(25);
+var util = __webpack_require__(3);
+var utils = __webpack_require__(9);
+var asn1 = __webpack_require__(27);
+
+/*JSSTYLED*/
+var DNS_NAME_RE = /^([*]|[a-z0-9][a-z0-9\-]{0,62})(?:\.([*]|[a-z0-9][a-z0-9\-]{0,62}))*$/i;
+
+var oids = {};
+oids.cn = '2.5.4.3';
+oids.o = '2.5.4.10';
+oids.ou = '2.5.4.11';
+oids.l = '2.5.4.7';
+oids.s = '2.5.4.8';
+oids.c = '2.5.4.6';
+oids.sn = '2.5.4.4';
+oids.dc = '0.9.2342.19200300.100.1.25';
+oids.uid = '0.9.2342.19200300.100.1.1';
+oids.mail = '0.9.2342.19200300.100.1.3';
+
+var unoids = {};
+Object.keys(oids).forEach(function (k) {
+	unoids[oids[k]] = k;
+});
+
+function Identity(opts) {
+	var self = this;
+	assert.object(opts, 'options');
+	assert.arrayOfObject(opts.components, 'options.components');
+	this.components = opts.components;
+	this.componentLookup = {};
+	this.components.forEach(function (c) {
+		if (c.name && !c.oid)
+			c.oid = oids[c.name];
+		if (c.oid && !c.name)
+			c.name = unoids[c.oid];
+		if (self.componentLookup[c.name] === undefined)
+			self.componentLookup[c.name] = [];
+		self.componentLookup[c.name].push(c);
+	});
+	if (this.componentLookup.cn && this.componentLookup.cn.length > 0) {
+		this.cn = this.componentLookup.cn[0].value;
+	}
+	assert.optionalString(opts.type, 'options.type');
+	if (opts.type === undefined) {
+		if (this.components.length === 1 &&
+		    this.componentLookup.cn &&
+		    this.componentLookup.cn.length === 1 &&
+		    this.componentLookup.cn[0].value.match(DNS_NAME_RE)) {
+			this.type = 'host';
+			this.hostname = this.componentLookup.cn[0].value;
+
+		} else if (this.componentLookup.dc &&
+		    this.components.length === this.componentLookup.dc.length) {
+			this.type = 'host';
+			this.hostname = this.componentLookup.dc.map(
+			    function (c) {
+				return (c.value);
+			}).join('.');
+
+		} else if (this.componentLookup.uid &&
+		    this.components.length ===
+		    this.componentLookup.uid.length) {
+			this.type = 'user';
+			this.uid = this.componentLookup.uid[0].value;
+
+		} else if (this.componentLookup.cn &&
+		    this.componentLookup.cn.length === 1 &&
+		    this.componentLookup.cn[0].value.match(DNS_NAME_RE)) {
+			this.type = 'host';
+			this.hostname = this.componentLookup.cn[0].value;
+
+		} else if (this.componentLookup.uid &&
+		    this.componentLookup.uid.length === 1) {
+			this.type = 'user';
+			this.uid = this.componentLookup.uid[0].value;
+
+		} else if (this.componentLookup.mail &&
+		    this.componentLookup.mail.length === 1) {
+			this.type = 'email';
+			this.email = this.componentLookup.mail[0].value;
+
+		} else if (this.componentLookup.cn &&
+		    this.componentLookup.cn.length === 1) {
+			this.type = 'user';
+			this.uid = this.componentLookup.cn[0].value;
+
+		} else {
+			this.type = 'unknown';
+		}
+	} else {
+		this.type = opts.type;
+		if (this.type === 'host')
+			this.hostname = opts.hostname;
+		else if (this.type === 'user')
+			this.uid = opts.uid;
+		else if (this.type === 'email')
+			this.email = opts.email;
+		else
+			throw (new Error('Unknown type ' + this.type));
+	}
+}
+
+Identity.prototype.toString = function () {
+	return (this.components.map(function (c) {
+		return (c.name.toUpperCase() + '=' + c.value);
+	}).join(', '));
+};
+
+/*
+ * These are from X.680 -- PrintableString allowed chars are in section 37.4
+ * table 8. Spec for IA5Strings is "1,6 + SPACE + DEL" where 1 refers to
+ * ISO IR #001 (standard ASCII control characters) and 6 refers to ISO IR #006
+ * (the basic ASCII character set).
+ */
+/* JSSTYLED */
+var NOT_PRINTABLE = /[^a-zA-Z0-9 '(),+.\/:=?-]/;
+/* JSSTYLED */
+var NOT_IA5 = /[^\x00-\x7f]/;
+
+Identity.prototype.toAsn1 = function (der, tag) {
+	der.startSequence(tag);
+	this.components.forEach(function (c) {
+		der.startSequence(asn1.Ber.Constructor | asn1.Ber.Set);
+		der.startSequence();
+		der.writeOID(c.oid);
+		/*
+		 * If we fit in a PrintableString, use that. Otherwise use an
+		 * IA5String or UTF8String.
+		 */
+		if (c.value.match(NOT_IA5)) {
+			var v = new Buffer(c.value, 'utf8');
+			der.writeBuffer(v, asn1.Ber.Utf8String);
+		} else if (c.value.match(NOT_PRINTABLE)) {
+			der.writeString(c.value, asn1.Ber.IA5String);
+		} else {
+			der.writeString(c.value, asn1.Ber.PrintableString);
+		}
+		der.endSequence();
+		der.endSequence();
+	});
+	der.endSequence();
+};
+
+function globMatch(a, b) {
+	if (a === '**' || b === '**')
+		return (true);
+	var aParts = a.split('.');
+	var bParts = b.split('.');
+	if (aParts.length !== bParts.length)
+		return (false);
+	for (var i = 0; i < aParts.length; ++i) {
+		if (aParts[i] === '*' || bParts[i] === '*')
+			continue;
+		if (aParts[i] !== bParts[i])
+			return (false);
+	}
+	return (true);
+}
+
+Identity.prototype.equals = function (other) {
+	if (!Identity.isIdentity(other, [1, 0]))
+		return (false);
+	if (other.components.length !== this.components.length)
+		return (false);
+	for (var i = 0; i < this.components.length; ++i) {
+		if (this.components[i].oid !== other.components[i].oid)
+			return (false);
+		if (!globMatch(this.components[i].value,
+		    other.components[i].value)) {
+			return (false);
+		}
+	}
+	return (true);
+};
+
+Identity.forHost = function (hostname) {
+	assert.string(hostname, 'hostname');
+	return (new Identity({
+		type: 'host',
+		hostname: hostname,
+		components: [ { name: 'cn', value: hostname } ]
+	}));
+};
+
+Identity.forUser = function (uid) {
+	assert.string(uid, 'uid');
+	return (new Identity({
+		type: 'user',
+		uid: uid,
+		components: [ { name: 'uid', value: uid } ]
+	}));
+};
+
+Identity.forEmail = function (email) {
+	assert.string(email, 'email');
+	return (new Identity({
+		type: 'email',
+		email: email,
+		components: [ { name: 'mail', value: email } ]
+	}));
+};
+
+Identity.parseDN = function (dn) {
+	assert.string(dn, 'dn');
+	var parts = dn.split(',');
+	var cmps = parts.map(function (c) {
+		c = c.trim();
+		var eqPos = c.indexOf('=');
+		var name = c.slice(0, eqPos).toLowerCase();
+		var value = c.slice(eqPos + 1);
+		return ({ name: name, value: value });
+	});
+	return (new Identity({ components: cmps }));
+};
+
+Identity.parseAsn1 = function (der, top) {
+	var components = [];
+	der.readSequence(top);
+	var end = der.offset + der.length;
+	while (der.offset < end) {
+		der.readSequence(asn1.Ber.Constructor | asn1.Ber.Set);
+		var after = der.offset + der.length;
+		der.readSequence();
+		var oid = der.readOID();
+		var type = der.peek();
+		var value;
+		switch (type) {
+		case asn1.Ber.PrintableString:
+		case asn1.Ber.IA5String:
+		case asn1.Ber.OctetString:
+		case asn1.Ber.T61String:
+			value = der.readString(type);
+			break;
+		case asn1.Ber.Utf8String:
+			value = der.readString(type, true);
+			value = value.toString('utf8');
+			break;
+		case asn1.Ber.CharacterString:
+		case asn1.Ber.BMPString:
+			value = der.readString(type, true);
+			value = value.toString('utf16le');
+			break;
+		default:
+			throw (new Error('Unknown asn1 type ' + type));
+		}
+		components.push({ oid: oid, value: value });
+		der._offset = after;
+	}
+	der._offset = end;
+	return (new Identity({
+		components: components
+	}));
+};
+
+Identity.isIdentity = function (obj, ver) {
+	return (utils.isCompatible(obj, Identity, ver));
+};
+
+/*
+ * API versions for Identity:
+ * [1,0] -- initial ver
+ */
+Identity.prototype._sshpkApiVersion = [1, 0];
+
+Identity._oldVersionDetect = function (obj) {
+	return ([1, 0]);
+};
+
+
+/***/ }),
+/* 66 */
+/***/ (function(module, exports) {
+
+module.exports = require("fs");
+
+/***/ }),
+/* 67 */
+/***/ (function(module, exports) {
+
+module.exports = require("https");
+
+/***/ }),
 /* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16701,7 +16700,7 @@ var global            = __webpack_require__(4)
   , $export           = __webpack_require__(1)
   , redefine          = __webpack_require__(31)
   , redefineAll       = __webpack_require__(48)
-  , meta              = __webpack_require__(53)
+  , meta              = __webpack_require__(54)
   , forOf             = __webpack_require__(71)
   , anInstance        = __webpack_require__(43)
   , isObject          = __webpack_require__(8)
@@ -22707,7 +22706,7 @@ module.exports.httpify = function (resp, headers) {
 // 22.1.3.6 Array.prototype.fill(value, start = 0, end = this.length)
 
 var toObject = __webpack_require__(37)
-  , toIndex  = __webpack_require__(58)
+  , toIndex  = __webpack_require__(59)
   , toLength = __webpack_require__(19);
 module.exports = function fill(value /*, start = 0, end = @length */){
   var O      = toObject(this)
@@ -22728,7 +22727,7 @@ module.exports = function fill(value /*, start = 0, end = @length */){
 // true  -> Array#includes
 var toIObject = __webpack_require__(22)
   , toLength  = __webpack_require__(19)
-  , toIndex   = __webpack_require__(58);
+  , toIndex   = __webpack_require__(59);
 module.exports = function(IS_INCLUDES){
   return function($this, el, fromIndex){
     var O      = toIObject($this)
@@ -23074,7 +23073,7 @@ module.exports = {
 var classof   = __webpack_require__(96)
   , ITERATOR  = __webpack_require__(7)('iterator')
   , Iterators = __webpack_require__(45);
-module.exports = __webpack_require__(52).getIteratorMethod = function(it){
+module.exports = __webpack_require__(53).getIteratorMethod = function(it){
   if(it != undefined)return it[ITERATOR]
     || it['@@iterator']
     || Iterators[classof(it)];
@@ -26760,7 +26759,7 @@ Headers.prototype.raw = function() {
 
 var jsonSafeStringify = __webpack_require__(540)
   , crypto = __webpack_require__(2)
-  , Buffer = __webpack_require__(60).Buffer
+  , Buffer = __webpack_require__(61).Buffer
 
 var defer = typeof setImmediate === 'undefined'
   ? process.nextTick
@@ -26846,7 +26845,7 @@ var Key = __webpack_require__(13);
 var PrivateKey = __webpack_require__(14);
 var pem = __webpack_require__(33);
 
-var pkcs8 = __webpack_require__(63);
+var pkcs8 = __webpack_require__(64);
 var readECDSACurve = pkcs8.readECDSACurve;
 
 function read(buf, options) {
@@ -27157,11 +27156,11 @@ function writePkcs1ECDSAPrivate(der, key) {
 // Copyright 2015 Joyent, Inc.
 
 var Key = __webpack_require__(13);
-var Fingerprint = __webpack_require__(62);
+var Fingerprint = __webpack_require__(63);
 var Signature = __webpack_require__(26);
 var PrivateKey = __webpack_require__(14);
-var Certificate = __webpack_require__(61);
-var Identity = __webpack_require__(64);
+var Certificate = __webpack_require__(62);
+var Identity = __webpack_require__(65);
 var errs = __webpack_require__(25);
 
 module.exports = {
@@ -29913,7 +29912,7 @@ CombinedStream.prototype._emitError = function(err) {
 // 22.1.3.3 Array.prototype.copyWithin(target, start, end = this.length)
 
 var toObject = __webpack_require__(37)
-  , toIndex  = __webpack_require__(58)
+  , toIndex  = __webpack_require__(59)
   , toLength = __webpack_require__(19);
 
 module.exports = [].copyWithin || function copyWithin(target/*= 0*/, start/*= 0, end = @length*/){
@@ -29944,7 +29943,7 @@ module.exports = [].copyWithin || function copyWithin(target/*= 0*/, start/*= 0,
 "use strict";
 
 var dP          = __webpack_require__(11).f
-  , create      = __webpack_require__(54)
+  , create      = __webpack_require__(55)
   , redefineAll = __webpack_require__(48)
   , ctx         = __webpack_require__(23)
   , anInstance  = __webpack_require__(43)
@@ -29954,7 +29953,7 @@ var dP          = __webpack_require__(11).f
   , step        = __webpack_require__(157)
   , setSpecies  = __webpack_require__(106)
   , DESCRIPTORS = __webpack_require__(18)
-  , fastKey     = __webpack_require__(53).fastKey
+  , fastKey     = __webpack_require__(54).fastKey
   , SIZE        = DESCRIPTORS ? '_s' : 'size';
 
 var getEntry = function(that, key){
@@ -30092,12 +30091,12 @@ module.exports = {
 "use strict";
 
 var redefineAll       = __webpack_require__(48)
-  , getWeak           = __webpack_require__(53).getWeak
+  , getWeak           = __webpack_require__(54).getWeak
   , anObject          = __webpack_require__(6)
   , isObject          = __webpack_require__(8)
   , anInstance        = __webpack_require__(43)
   , forOf             = __webpack_require__(71)
-  , createArrayMethod = __webpack_require__(51)
+  , createArrayMethod = __webpack_require__(52)
   , $has              = __webpack_require__(16)
   , arrayFind         = createArrayMethod(5)
   , arrayFindIndex    = createArrayMethod(6)
@@ -30253,7 +30252,7 @@ var LIBRARY        = __webpack_require__(46)
   , Iterators      = __webpack_require__(45)
   , $iterCreate    = __webpack_require__(372)
   , setToStringTag = __webpack_require__(49)
-  , getPrototypeOf = __webpack_require__(56)
+  , getPrototypeOf = __webpack_require__(57)
   , ITERATOR       = __webpack_require__(7)('iterator')
   , BUGGY          = !([].keys && 'next' in [].keys()) // Safari has buggy iterators w/o `next`
   , FF_ITERATOR    = '@@iterator'
@@ -30341,7 +30340,7 @@ module.exports = Math.log1p || function log1p(x){
 // 19.1.2.1 Object.assign(target, source, ...)
 var getKeys  = __webpack_require__(47)
   , gOPS     = __webpack_require__(74)
-  , pIE      = __webpack_require__(57)
+  , pIE      = __webpack_require__(58)
   , toObject = __webpack_require__(37)
   , IObject  = __webpack_require__(101)
   , $assign  = Object.assign;
@@ -30399,7 +30398,7 @@ module.exports = function(object, names){
 
 var getKeys   = __webpack_require__(47)
   , toIObject = __webpack_require__(22)
-  , isEnum    = __webpack_require__(57).f;
+  , isEnum    = __webpack_require__(58).f;
 module.exports = function(isEntries){
   return function(it){
     var O      = toIObject(it)
@@ -30419,7 +30418,7 @@ module.exports = function(isEntries){
 /***/ (function(module, exports, __webpack_require__) {
 
 // all object keys, includes non-enumerable and symbols
-var gOPN     = __webpack_require__(55)
+var gOPN     = __webpack_require__(56)
   , gOPS     = __webpack_require__(74)
   , anObject = __webpack_require__(6)
   , Reflect  = __webpack_require__(4).Reflect;
@@ -30507,7 +30506,7 @@ var global         = __webpack_require__(4)
   , anInstance     = __webpack_require__(43)
   , toInteger      = __webpack_require__(50)
   , toLength       = __webpack_require__(19)
-  , gOPN           = __webpack_require__(55).f
+  , gOPN           = __webpack_require__(56).f
   , dP             = __webpack_require__(11).f
   , arrayFill      = __webpack_require__(94)
   , setToStringTag = __webpack_require__(49)
@@ -30943,7 +30942,7 @@ module.exports = {
 /* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const async = __webpack_require__(67)
+const async = __webpack_require__(51)
 const cozy = __webpack_require__(39)
 
 // Folder model is used to list the list of available folders in the user's
@@ -62197,10 +62196,10 @@ var utils = __webpack_require__(9);
 var Key = __webpack_require__(13);
 var PrivateKey = __webpack_require__(14);
 var pem = __webpack_require__(33);
-var Identity = __webpack_require__(64);
+var Identity = __webpack_require__(65);
 var Signature = __webpack_require__(26);
-var Certificate = __webpack_require__(61);
-var pkcs8 = __webpack_require__(63);
+var Certificate = __webpack_require__(62);
+var pkcs8 = __webpack_require__(64);
 
 /*
  * This file is based on RFC5280 (X.509).
@@ -63302,6 +63301,7 @@ module.exports = require("zlib");
 
 
 
+const async = __webpack_require__(51)
 const request = __webpack_require__(303)
 // usefull for debugging the konnector
 // require('request-debug')(request)
@@ -63374,7 +63374,7 @@ module.exports = baseKonnector.createNew({
 
   models: [Contrat,Home,Foyer,ModalitesPaiement,SinistreHabitation,SinistreVehicule,Societaire],
   fetchOperations: [
-    nthtry,
+    tryntimes,
     updateOrCreate(logger, Contrat, ['societaire']),
     updateOrCreate(logger, Home, ['name']),
     updateOrCreate(logger, Foyer, ['name']),
@@ -63385,30 +63385,27 @@ module.exports = baseKonnector.createNew({
   ]
 })
 
-function nthtry (requiredFields, entries, data, next) {
-  log('info', 'First try connecting to MAIF API')
-  fetchWithRefreshToken(requiredFields, entries, data, err => {
-    if (err) {
-      log('info', 'Second try connecting to MAIF API')
-      fetchWithRefreshToken(requiredFields, entries, data, err => {
-        if (err) {
-          next(err)
-        } else {
-          next()
-        }
-      })
-    } else {
-      next()
-    }
+function tryntimes (requiredFields, entries, data, next) {
+  let count = 0
+  async.whilst(function () {
+    count++
+    return Object.keys(entries).length === 0
+  }, function (callback) {
+    log('info', `Try ${count}`)
+    fetchWithRefreshToken(function(){
+      callback()
+    }, requiredFields, entries, data)
+  }, function (err, result) {
+    next()
   })
 }
 
-function fetchWithRefreshToken (requiredFields, entries, data, next) {
+function fetchWithRefreshToken (cb, requiredFields, entries, data) {
   refreshToken(requiredFields, entries, data, err => {
-    if (err) return next(err)
+    if (err) return cb(err)
     fetchData(requiredFields, entries, data, err => {
-      if (err) return next(err)
-      next()
+      if (err) return cb(err)
+      cb()
     })
   })
 }
@@ -69900,7 +69897,7 @@ module.exports = Function.bind || function bind(that /*, args... */){
 // all enumerable object keys, includes symbols
 var getKeys = __webpack_require__(47)
   , gOPS    = __webpack_require__(74)
-  , pIE     = __webpack_require__(57);
+  , pIE     = __webpack_require__(58);
 module.exports = function(it){
   var result     = getKeys(it)
     , getSymbols = gOPS.f;
@@ -69951,7 +69948,7 @@ module.exports = function(that, target, C){
 
 "use strict";
 
-var create         = __webpack_require__(54)
+var create         = __webpack_require__(55)
   , descriptor     = __webpack_require__(30)
   , setToStringTag = __webpack_require__(49)
   , IteratorPrototype = {};
@@ -70076,7 +70073,7 @@ module.exports = __webpack_require__(18) ? Object.defineProperties : function de
 
 // fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
 var toIObject = __webpack_require__(22)
-  , gOPN      = __webpack_require__(55).f
+  , gOPN      = __webpack_require__(56).f
   , toString  = {}.toString;
 
 var windowNames = typeof window == 'object' && window && Object.getOwnPropertyNames
@@ -70157,7 +70154,7 @@ module.exports = function(TO_STRING){
 /***/ (function(module, exports, __webpack_require__) {
 
 var global         = __webpack_require__(4)
-  , core           = __webpack_require__(52)
+  , core           = __webpack_require__(53)
   , LIBRARY        = __webpack_require__(46)
   , wksExt         = __webpack_require__(168)
   , defineProperty = __webpack_require__(11).f;
@@ -70196,7 +70193,7 @@ __webpack_require__(42)('fill');
 
 // 22.1.3.9 Array.prototype.findIndex(predicate, thisArg = undefined)
 var $export = __webpack_require__(1)
-  , $find   = __webpack_require__(51)(6)
+  , $find   = __webpack_require__(52)(6)
   , KEY     = 'findIndex'
   , forced  = true;
 // Shouldn't skip holes
@@ -70216,7 +70213,7 @@ __webpack_require__(42)(KEY);
 
 // 22.1.3.8 Array.prototype.find(predicate, thisArg = undefined)
 var $export = __webpack_require__(1)
-  , $find   = __webpack_require__(51)(5)
+  , $find   = __webpack_require__(52)(5)
   , KEY     = 'find'
   , forced  = true;
 // Shouldn't skip holes
@@ -70971,7 +70968,7 @@ if(!USE_NATIVE){
 $export($export.G + $export.W + $export.F * !USE_NATIVE, {Promise: $Promise});
 __webpack_require__(49)($Promise, PROMISE);
 __webpack_require__(106)(PROMISE);
-Wrapper = __webpack_require__(52)[PROMISE];
+Wrapper = __webpack_require__(53)[PROMISE];
 
 // statics
 $export($export.S + $export.F * !USE_NATIVE, PROMISE, {
@@ -71066,7 +71063,7 @@ $export($export.S + $export.F * !__webpack_require__(10)(function(){
 
 // 26.1.2 Reflect.construct(target, argumentsList [, newTarget])
 var $export    = __webpack_require__(1)
-  , create     = __webpack_require__(54)
+  , create     = __webpack_require__(55)
   , aFunction  = __webpack_require__(36)
   , anObject   = __webpack_require__(6)
   , isObject   = __webpack_require__(8)
@@ -71120,7 +71117,7 @@ $export($export.S + $export.F * (NEW_TARGET_BUG || ARGS_BUG), 'Reflect', {
 var dP          = __webpack_require__(11)
   , $export     = __webpack_require__(1)
   , anObject    = __webpack_require__(6)
-  , toPrimitive = __webpack_require__(59);
+  , toPrimitive = __webpack_require__(60);
 
 // MS Edge has broken Reflect.defineProperty - throwing instead of returning false
 $export($export.S + $export.F * __webpack_require__(10)(function(){
@@ -71176,7 +71173,7 @@ $export($export.S, 'Reflect', {
 
 // 26.1.8 Reflect.getPrototypeOf(target)
 var $export  = __webpack_require__(1)
-  , getProto = __webpack_require__(56)
+  , getProto = __webpack_require__(57)
   , anObject = __webpack_require__(6);
 
 $export($export.S, 'Reflect', {
@@ -71191,7 +71188,7 @@ $export($export.S, 'Reflect', {
 
 // 26.1.6 Reflect.get(target, propertyKey [, receiver])
 var gOPD           = __webpack_require__(29)
-  , getPrototypeOf = __webpack_require__(56)
+  , getPrototypeOf = __webpack_require__(57)
   , has            = __webpack_require__(16)
   , $export        = __webpack_require__(1)
   , isObject       = __webpack_require__(8)
@@ -71297,7 +71294,7 @@ if(setProto)$export($export.S, 'Reflect', {
 // 26.1.13 Reflect.set(target, propertyKey, V [, receiver])
 var dP             = __webpack_require__(11)
   , gOPD           = __webpack_require__(29)
-  , getPrototypeOf = __webpack_require__(56)
+  , getPrototypeOf = __webpack_require__(57)
   , has            = __webpack_require__(16)
   , $export        = __webpack_require__(1)
   , createDesc     = __webpack_require__(30)
@@ -71522,7 +71519,7 @@ $export($export.P + $export.F * __webpack_require__(100)(ENDS_WITH), 'String', {
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export        = __webpack_require__(1)
-  , toIndex        = __webpack_require__(58)
+  , toIndex        = __webpack_require__(59)
   , fromCharCode   = String.fromCharCode
   , $fromCodePoint = String.fromCodePoint;
 
@@ -71633,7 +71630,7 @@ var global         = __webpack_require__(4)
   , DESCRIPTORS    = __webpack_require__(18)
   , $export        = __webpack_require__(1)
   , redefine       = __webpack_require__(31)
-  , META           = __webpack_require__(53).KEY
+  , META           = __webpack_require__(54).KEY
   , $fails         = __webpack_require__(10)
   , shared         = __webpack_require__(108)
   , setToStringTag = __webpack_require__(49)
@@ -71646,9 +71643,9 @@ var global         = __webpack_require__(4)
   , isArray        = __webpack_require__(152)
   , anObject       = __webpack_require__(6)
   , toIObject      = __webpack_require__(22)
-  , toPrimitive    = __webpack_require__(59)
+  , toPrimitive    = __webpack_require__(60)
   , createDesc     = __webpack_require__(30)
-  , _create        = __webpack_require__(54)
+  , _create        = __webpack_require__(55)
   , gOPNExt        = __webpack_require__(376)
   , $GOPD          = __webpack_require__(29)
   , $DP            = __webpack_require__(11)
@@ -71775,8 +71772,8 @@ if(!USE_NATIVE){
 
   $GOPD.f = $getOwnPropertyDescriptor;
   $DP.f   = $defineProperty;
-  __webpack_require__(55).f = gOPNExt.f = $getOwnPropertyNames;
-  __webpack_require__(57).f  = $propertyIsEnumerable;
+  __webpack_require__(56).f = gOPNExt.f = $getOwnPropertyNames;
+  __webpack_require__(58).f  = $propertyIsEnumerable;
   __webpack_require__(74).f = $getOwnPropertySymbols;
 
   if(DESCRIPTORS && !__webpack_require__(46)){
@@ -71967,9 +71964,9 @@ __webpack_require__(24)('Uint8', 1, function(init){
 
 "use strict";
 
-var each         = __webpack_require__(51)(0)
+var each         = __webpack_require__(52)(0)
   , redefine     = __webpack_require__(31)
-  , meta         = __webpack_require__(53)
+  , meta         = __webpack_require__(54)
   , assign       = __webpack_require__(159)
   , weak         = __webpack_require__(149)
   , isObject     = __webpack_require__(8)
@@ -75885,7 +75882,7 @@ module.exports = {
 /* 467 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const fs = __webpack_require__(65)
+const fs = __webpack_require__(66)
 const path = __webpack_require__(88)
 const log = __webpack_require__(75)('cozy-client-js-stub')
 let fixture = {}
@@ -76051,7 +76048,7 @@ module.exports = (log, model, suffix, vendor) => {
 /* 469 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const async = __webpack_require__(67)
+const async = __webpack_require__(51)
 const moment = __webpack_require__(0)
 
 const BankOperation = __webpack_require__(471)
@@ -76228,7 +76225,7 @@ module.exports = (options) => {
 /* 470 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const fs = __webpack_require__(65)
+const fs = __webpack_require__(66)
 const log = __webpack_require__(75)('manifest')
 
 module.exports = {
@@ -76343,7 +76340,7 @@ module.exports = {
 /* 473 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const async = __webpack_require__(67)
+const async = __webpack_require__(51)
 const moment = __webpack_require__(0)
 const naming = __webpack_require__(174)
 const Folder = __webpack_require__(173)
@@ -76518,7 +76515,7 @@ function checkForMissingFiles (options, callback) {
   @param filter a list of field to look at to find similar
   @param options to be used later.
 */
-const async = __webpack_require__(67)
+const async = __webpack_require__(51)
 const log = __webpack_require__(114)
 
 module.exports = (logger, model, filter, options) =>
@@ -77304,7 +77301,7 @@ function createWritableStdioStream (fd) {
       break;
 
     case 'FILE':
-      var fs = __webpack_require__(65);
+      var fs = __webpack_require__(66);
       stream = new fs.SyncWriteStream(fd, { autoClose: false });
       stream._type = 'fs';
       break;
@@ -77817,7 +77814,7 @@ var util = __webpack_require__(3)
   , Agent = __webpack_require__(34).Agent
   , net = __webpack_require__(87)
   , tls = __webpack_require__(319)
-  , AgentSSL = __webpack_require__(66).Agent
+  , AgentSSL = __webpack_require__(67).Agent
   
 function getConnectionName(host, port) {  
   var name = ''
@@ -77958,9 +77955,9 @@ var CombinedStream = __webpack_require__(146);
 var util = __webpack_require__(3);
 var path = __webpack_require__(88);
 var http = __webpack_require__(34);
-var https = __webpack_require__(66);
+var https = __webpack_require__(67);
 var parseUrl = __webpack_require__(15).parse;
-var fs = __webpack_require__(65);
+var fs = __webpack_require__(66);
 var mime = __webpack_require__(183);
 var asynckit = __webpack_require__(358);
 var populate = __webpack_require__(485);
@@ -100111,7 +100108,7 @@ function plural(ms, n, name) {
 var parse_url = __webpack_require__(15).parse;
 var resolve_url = __webpack_require__(15).resolve;
 var http = __webpack_require__(34);
-var https = __webpack_require__(66);
+var https = __webpack_require__(67);
 var zlib = __webpack_require__(320);
 var stream = __webpack_require__(17);
 
@@ -102359,7 +102356,7 @@ module.exports = getProxyFromURI
 "use strict";
 
 
-var fs = __webpack_require__(65)
+var fs = __webpack_require__(66)
 var qs = __webpack_require__(89)
 var validate = __webpack_require__(506)
 var extend = __webpack_require__(115)
@@ -102584,7 +102581,7 @@ exports.Har = Har
 var uuid = __webpack_require__(86)
   , CombinedStream = __webpack_require__(146)
   , isstream = __webpack_require__(181)
-  , Buffer = __webpack_require__(60).Buffer
+  , Buffer = __webpack_require__(61).Buffer
 
 
 function Multipart (request) {
@@ -102707,7 +102704,7 @@ var url = __webpack_require__(15)
   , uuid = __webpack_require__(86)
   , oauth = __webpack_require__(552)
   , crypto = __webpack_require__(2)
-  , Buffer = __webpack_require__(60).Buffer
+  , Buffer = __webpack_require__(61).Buffer
 
 
 function OAuth (request) {
@@ -103262,7 +103259,7 @@ exports.Tunnel = Tunnel
 
 
 var http = __webpack_require__(34)
-  , https = __webpack_require__(66)
+  , https = __webpack_require__(67)
   , url = __webpack_require__(15)
   , util = __webpack_require__(3)
   , stream = __webpack_require__(17)
@@ -103290,7 +103287,7 @@ var http = __webpack_require__(34)
   , Redirect = __webpack_require__(565).Redirect
   , Tunnel = __webpack_require__(566).Tunnel
   , now = __webpack_require__(553)
-  , Buffer = __webpack_require__(60).Buffer
+  , Buffer = __webpack_require__(61).Buffer
 
 var safeStringify = helpers.safeStringify
   , isReadStream = helpers.isReadStream
@@ -105268,11 +105265,11 @@ var crypto = __webpack_require__(2);
 var algs = __webpack_require__(12);
 var Key = __webpack_require__(13);
 var PrivateKey = __webpack_require__(14);
-var Identity = __webpack_require__(64);
+var Identity = __webpack_require__(65);
 var rfc4253 = __webpack_require__(40);
 var Signature = __webpack_require__(26);
 var utils = __webpack_require__(9);
-var Certificate = __webpack_require__(61);
+var Certificate = __webpack_require__(62);
 
 function verify(cert, key) {
 	/*
@@ -105594,9 +105591,9 @@ var utils = __webpack_require__(9);
 var Key = __webpack_require__(13);
 var PrivateKey = __webpack_require__(14);
 var pem = __webpack_require__(33);
-var Identity = __webpack_require__(64);
+var Identity = __webpack_require__(65);
 var Signature = __webpack_require__(26);
-var Certificate = __webpack_require__(61);
+var Certificate = __webpack_require__(62);
 
 function read(buf, options) {
 	if (typeof (buf) !== 'string') {
@@ -107372,11 +107369,11 @@ module.exports = {
 var net = __webpack_require__(87)
   , tls = __webpack_require__(319)
   , http = __webpack_require__(34)
-  , https = __webpack_require__(66)
+  , https = __webpack_require__(67)
   , events = __webpack_require__(584)
   , assert = __webpack_require__(41)
   , util = __webpack_require__(3)
-  , Buffer = __webpack_require__(60).Buffer
+  , Buffer = __webpack_require__(61).Buffer
   ;
 
 exports.httpOverHttp = httpOverHttp
