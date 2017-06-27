@@ -62412,7 +62412,7 @@ const request = __webpack_require__(300)
 // require('request-debug')(request)
 const moment = __webpack_require__(0)
 const uuid = __webpack_require__(85)
-const {baseKonnector, cozyClient, log, updateOrCreate, models} = __webpack_require__(89)
+const {baseKonnector, cozyClient, log, updateOrCreate} = __webpack_require__(89)
 const imp = __webpack_require__(320)
 const Contrat = imp.doctypeContrat
 const Home = imp.doctypeHome
@@ -62432,7 +62432,7 @@ const domain = cozyClient.cozyURL
 
 const scope = 'openid+profile+offline_access'
 const type = 'code'
-const b64Client = new Buffer(`${clientId}:${secret}`).toString('base64')
+const b64Client = Buffer.from(`${clientId}:${secret}`).toString('base64')
 
 const logger = __webpack_require__(549)({
   prefix: 'Maif',
@@ -62474,10 +62474,10 @@ module.exports = baseKonnector.createNew({
 
   dataType: [
     'bill',
-    'contact',
+    'contact'
   ],
 
-  models: [Contrat,Home,Foyer,ModalitesPaiement,SinistreHabitation,SinistreVehicule,Societaire],
+  models: [Contrat, Home, Foyer, ModalitesPaiement, SinistreHabitation, SinistreVehicule, Societaire],
   fetchOperations: [
     tryntimes,
     updateOrCreate(logger, Contrat, ['societaire']),
@@ -62497,10 +62497,11 @@ function tryntimes (requiredFields, entries, data, next) {
     return Object.keys(entries).length === 0
   }, function (callback) {
     log('info', `Try ${count}`)
-    fetchWithRefreshToken(function(){
+    fetchWithRefreshToken(function () {
       callback()
     }, requiredFields, entries, data)
   }, function (err, result) {
+    log('error', err)
     next()
   })
 }
@@ -62623,33 +62624,32 @@ function fetchData (requiredFields, entries, data, next) {
 
     // Ajout data Contrat
     entries.contrats = []
-    entries.contrats.push({'contrat':body["MesInfos"].contract})
+    entries.contrats.push({'contrat': body['MesInfos'].contract})
 
     // Ajout data Home
     entries.homes = []
-    entries.homes.push({'home':body["MesInfos"].home})
+    entries.homes.push({'home': body['MesInfos'].home})
 
     // Ajout data Foyer
     entries.foyers = []
-    entries.foyers.push({'foyer':body["MesInfos"].foyer})
+    entries.foyers.push({'foyer': body['MesInfos'].foyer})
 
     // Ajout data ModalitesPaiement
     entries.paymenttermss = []
-    entries.paymenttermss.push({'paymentterms':body["MesInfos"].paymentTerms})
+    entries.paymenttermss.push({'paymentterms': body['MesInfos'].paymentTerms})
 
     // Ajout data SinistreHabitation & SinistreVehicule
-    var sinistres = body["MesInfos"].insuranceClaim
-    sinistres=sortByDate(sinistres)
+    var sinistres = body['MesInfos'].insuranceClaim
+    sinistres = sortByDate(sinistres)
     entries.sinistrevehicules = []
     entries.sinistrehabitations = []
     var sinistrevehicules = []
     var sinistrehabitations = []
 
-
     // Parcours des sinistres
-    for(var i=0;i<sinistres.length; i++){
+    for (var i = 0; i < sinistres.length; i++) {
       // Si immatriculationVehicule ==> sinistre VAM
-      if (sinistres[i]["immatriculationVehicule"] != undefined && sinistres[i]["immatriculationVehicule"] != ""){
+      if (sinistres[i]['immatriculationVehicule'] !== undefined && sinistres[i]['immatriculationVehicule'] !== '') {
         sinistrevehicules.push(sinistres[i])
       // Sinon ==> sinistre RAQVAM
       } else {
@@ -62657,26 +62657,26 @@ function fetchData (requiredFields, entries, data, next) {
       }
     }
 
-    entries.sinistrevehicules.push({'sinistrevehicules':sinistrevehicules})
-    entries.sinistrehabitations.push({'sinistrehabitations':sinistrehabitations})
+    entries.sinistrevehicules.push({'sinistrevehicules': sinistrevehicules})
+    entries.sinistrehabitations.push({'sinistrehabitations': sinistrehabitations})
 
     // Ajout data Societaire
     entries.societaires = []
-    entries.societaires.push({'societaire':body["MesInfos"].client})
+    entries.societaires.push({'societaire': body['MesInfos'].client})
 
     next()
   })
 }
 
-function sortByDate(data){
+function sortByDate (data) {
   if (!data) return []
 
-  data.sort(function(a, b) {
-    a = new Date(a.horodatage).getTime();
-    b = new Date(b.horodatage).getTime();
-    return a>b ? -1 : a<b ? 1 : 0;
-  });
-  return data;
+  data.sort(function (a, b) {
+    a = new Date(a.horodatage).getTime()
+    b = new Date(b.horodatage).getTime()
+    return a > b ? -1 : a < b ? 1 : 0
+  })
+  return data
 }
 
 /*
@@ -62717,179 +62717,179 @@ konnector.fetch({account: cozyFields.account, folderPath: cozyFields.folder_to_s
 /* 320 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const {models} = __webpack_require__(89);
-//const MaifUser = module.exports = models.baseModel.createNew({'displayName':'fr.maif.maifuser'});
+const {models} = __webpack_require__(89)
+// const MaifUser = module.exports = models.baseModel.createNew({'displayName':'fr.maif.maifuser'});
 
 const doctypeContrat = models.baseModel.createNew({
-  "displayName":"contrat",
-  "docType":"fr.maif.maifuser.contrat",
-  "docTypeVersion": "MaifKonnector-0.0.0-draft",
-  "societaire": "1234567N",
-  "name": "fr.maif.maifuser.contrat",
-  "vendor": "Maif",
-  "formuleBase": "VAM Assistance panne 0km",
-  "startDate": "1989-04-29",
-  "montantTarifTtc": 312,
-  "objects": [
-  	{
-  		"startDate": "2013-04-12T00:00:00",
-      "lieu": [
+  'displayName': 'contrat',
+  'docType': 'fr.maif.maifuser.contrat',
+  'docTypeVersion': 'MaifKonnector-0.0.0-draft',
+  'societaire': '1234567N',
+  'name': 'fr.maif.maifuser.contrat',
+  'vendor': 'Maif',
+  'formuleBase': 'VAM Assistance panne 0km',
+  'startDate': '1989-04-29',
+  'montantTarifTtc': 312,
+  'objects': [
+    {
+      'startDate': '2013-04-12T00:00:00',
+      'lieu': [
         {
-          "address":  {
-            "street": "2 BOULEVARD DES BELGES",
-            "postCode": "69006",
-            "city": "LYON",
-            "country": "FRANCE",
-            "numeroPays":"000"
+          'address': {
+            'street': '2 BOULEVARD DES BELGES',
+            'postCode': '69006',
+            'city': 'LYON',
+            'country': 'FRANCE',
+            'numeroPays': '000'
           }
         }
       ]
-
-  	}
-  ]
-});
-
-const doctypeHome = models.baseModel.createNew({
-  "displayName":"home",
-  "docType": "fr.maif.maifuser.home",
-  "name": "fr.maif.maifuser.home",
-  "address": {
-    "street": "2 BOULEVARD DES BELGES",
-    "postCode": "69006",
-    "city": "LYON",
-    "country": "FRANCE",
-    "numeroPays":"000"
-  },
-  "codeNatureLieuRisque":"2",
-  "natureLieu":"Appartement",
-  "codeJuridique":"1",
-  "situationJuridiqueLieu":"Locataire ou occupant à  titre gratuit",
-  "codePieceLieuRisque":"2",
-  "nombrePieces":"1 à 2 Pièces (ou 2 Pièces)",
-  "codeTrancheMobilier":"3",
-  "patrimoineMobilier":"3 501 à 6 800 ",
-  "societaire":"1234567"
-});
-
-const doctypeFoyer = models.baseModel.createNew({
-  "displayName":"foyer",
-  "docType": "fr.maif.maifuser.foyer",
-  "name": "fr.maif.maifuser.foyer",
-  "address":{
-    "street": "2 BOULEVARD DES BELGES",
-    "postCode": "69006",
-    "city": "LYON 06",
-    "country": "FRANCE",
-    "numeroPays":"000",
-    "deliveryOffice":"LYON",
-    "inseeCode":"69386",
-    "residence":""
-  },
-  "membres":[
-    {
-      "name": {
-        "codeTitrePersonne":"2",
-        "prefix":"MME.",
-        "family":"DUPOND",
-        "given":"GERMAINE"
-      },
-      "email":"germainedupondmesinfos@gmail.com",
-      "telMobile":"+33012345678",
-      "birthdate":"1972-03-18",
-      "birthplace":{},
-      "codeProfessionSocietaire":"13",
-      "profession":"13 Agent, employé",
-      "codeQualitePersonne":"08","quality": "Membre principal"
     }
   ]
-});
+})
+
+const doctypeHome = models.baseModel.createNew({
+  'displayName': 'home',
+  'docType': 'fr.maif.maifuser.home',
+  'name': 'fr.maif.maifuser.home',
+  'address': {
+    'street': '2 BOULEVARD DES BELGES',
+    'postCode': '69006',
+    'city': 'LYON',
+    'country': 'FRANCE',
+    'numeroPays': '000'
+  },
+  'codeNatureLieuRisque': '2',
+  'natureLieu': 'Appartement',
+  'codeJuridique': '1',
+  'situationJuridiqueLieu': 'Locataire ou occupant à  titre gratuit',
+  'codePieceLieuRisque': '2',
+  'nombrePieces': '1 à 2 Pièces (ou 2 Pièces)',
+  'codeTrancheMobilier': '3',
+  'patrimoineMobilier': '3 501 à 6 800 ',
+  'societaire': '1234567'
+})
+
+const doctypeFoyer = models.baseModel.createNew({
+  'displayName': 'foyer',
+  'docType': 'fr.maif.maifuser.foyer',
+  'name': 'fr.maif.maifuser.foyer',
+  'address': {
+    'street': '2 BOULEVARD DES BELGES',
+    'postCode': '69006',
+    'city': 'LYON 06',
+    'country': 'FRANCE',
+    'numeroPays': '000',
+    'deliveryOffice': 'LYON',
+    'inseeCode': '69386',
+    'residence': ''
+  },
+  'membres': [
+    {
+      'name': {
+        'codeTitrePersonne': '2',
+        'prefix': 'MME.',
+        'family': 'DUPOND',
+        'given': 'GERMAINE'
+      },
+      'email': 'germainedupondmesinfos@gmail.com',
+      'telMobile': '+33012345678',
+      'birthdate': '1972-03-18',
+      'birthplace': {},
+      'codeProfessionSocietaire': '13',
+      'profession': '13 Agent, employé',
+      'codeQualitePersonne': '08',
+      'quality': 'Membre principal'
+    }
+  ]
+})
 
 const doctypeModalitesPaiement = models.baseModel.createNew({
-  "displayName":"paymentterms",
-  "docType": "fr.maif.maifuser.paymentterms",
-  "name": "fr.maif.maifuser.paymentterms",
-  "rib": {
-    "bic":"SOGEFRPP",
-    "iban": "FR76300039876087612"
+  'displayName': 'paymentterms',
+  'docType': 'fr.maif.maifuser.paymentterms',
+  'name': 'fr.maif.maifuser.paymentterms',
+  'rib': {
+    'bic': 'SOGEFRPP',
+    'iban': 'FR76300039876087612'
   },
-  "modePaiement":"Prélèvement (1 fois)",
-  "societaire":"1234567",
-  "vendor": "maif"
-});
+  'modePaiement': 'Prélèvement (1 fois)',
+  'societaire': '1234567',
+  'vendor': 'maif'
+})
 
 const doctypeSinistreHabitation = models.baseModel.createNew({
-  "displayName":"sinistrehabitation",
-  "docType": "fr.maif.maifuser.sinistrehabitation",
-  "name": "fr.maif.maifuser.sinistrehabitation",
-  "docTypeVersion": "MaifKonnector-0.0.0-draft",
-  "type": "Habitation",
-  "societaire": "1234567N",
-  "timestamp": "2015-07-20T19:00",
-  "lieuSurvenance": "LYON 06",
-  "ref": "F150181177B",
-  "typeLieuSurvenance": "Agglomération",
-  "natureLieu": "Appartement",
-  "address": {
-    "street": "2, Boulevard des Belges",
-    "postCode": "6900",
-    "city": "LYON 06",
-    "country": "FRANCE"
-   }
-});
+  'displayName': 'sinistrehabitation',
+  'docType': 'fr.maif.maifuser.sinistrehabitation',
+  'name': 'fr.maif.maifuser.sinistrehabitation',
+  'docTypeVersion': 'MaifKonnector-0.0.0-draft',
+  'type': 'Habitation',
+  'societaire': '1234567N',
+  'timestamp': '2015-07-20T19:00',
+  'lieuSurvenance': 'LYON 06',
+  'ref': 'F150181177B',
+  'typeLieuSurvenance': 'Agglomération',
+  'natureLieu': 'Appartement',
+  'address': {
+    'street': '2, Boulevard des Belges',
+    'postCode': '6900',
+    'city': 'LYON 06',
+    'country': 'FRANCE'
+  }
+})
 
 const doctypeSinistreVehicule = models.baseModel.createNew({
-  "displayName":"sinistrevehicule",
-  "docType": "fr.maif.maifuser.sinistrevehicule",
-  "name": "fr.maif.maifuser.sinistrevehicule",
-  "docTypeVersion": "MaifKonnector-0.0.0-draft",
-  "type": "Vehicule",
-  "societaire": "1234567N",
-  "timestamp": "2015-07-20T19:00",
-  "lieuSurvenance": "LYON 06",
-  "ref": "F150181177B",
-  "typeLieuSurvenance": "Agglomération",
-  "immatriculationVehicule": "AA-123-XD",
-  "driver": {
-  	"prefix": "Mme",
-  	"family": "Dupond",
-  	"given": "Germaine"
+  'displayName': 'sinistrevehicule',
+  'docType': 'fr.maif.maifuser.sinistrevehicule',
+  'name': 'fr.maif.maifuser.sinistrevehicule',
+  'docTypeVersion': 'MaifKonnector-0.0.0-draft',
+  'type': 'Vehicule',
+  'societaire': '1234567N',
+  'timestamp': '2015-07-20T19:00',
+  'lieuSurvenance': 'LYON 06',
+  'ref': 'F150181177B',
+  'typeLieuSurvenance': 'Agglomération',
+  'immatriculationVehicule': 'AA-123-XD',
+  'driver': {
+    'prefix': 'Mme',
+    'family': 'Dupond',
+    'given': 'Germaine'
   }
-});
+})
 
 const doctypeSocietaire = models.baseModel.createNew({
-  "displayName":"societaire",
-  "docType": "fr.maif.maifuser.societaire",
-  "name": "fr.maif.maifuser.societaire",
-  "vendor": "maif",
-  "thename": {
-    "codeTitrePersonne":"2",
-    "prefix":"MME.",
-    "family":"DUPOND",
-    "given":"GERMAINE",
-    "maiden":""
+  'displayName': 'societaire',
+  'docType': 'fr.maif.maifuser.societaire',
+  'name': 'fr.maif.maifuser.societaire',
+  'vendor': 'maif',
+  'thename': {
+    'codeTitrePersonne': '2',
+    'prefix': 'MME.',
+    'family': 'DUPOND',
+    'given': 'GERMAINE',
+    'maiden': ''
   },
-  "email":"germainedupondmesinfos@gmail.com",
-  "telMobile":"+33012345678",
-  "birthdate":"1972-03-18",
-  "birthplace":{},
-  "codeProfessionSocietaire":"13",
-  "profession":"13 Agent, employé",
-  "codeSituationFamiliale":"U",
-  "familySituation":"union libre",
-  "codeActif":"A Actif",
-  "referenceClient":"1234567"
-});
+  'email': 'germainedupondmesinfos@gmail.com',
+  'telMobile': '+33012345678',
+  'birthdate': '1972-03-18',
+  'birthplace': {},
+  'codeProfessionSocietaire': '13',
+  'profession': '13 Agent, employé',
+  'codeSituationFamiliale': 'U',
+  'familySituation': 'union libre',
+  'codeActif': 'A Actif',
+  'referenceClient': '1234567'
+})
 
 const doctypeMaifUser = models.baseModel.createNew({
-  displayName:'maifuser',
-  name:"fr.maif.maifuser.maifuser"
-});
+  displayName: 'maifuser',
+  name: 'fr.maif.maifuser.maifuser'
+})
 
 doctypeMaifUser.getOne = callback =>
-    doctypeMaifUser.all(function(err, maifusers) {
-        let error = err || maifusers.error;
-        return callback(error, maifusers[0]);
-})
+    doctypeMaifUser.all(function (err, maifusers) {
+      let error = err || maifusers.error
+      return callback(error, maifusers[0])
+    })
 
 module.exports = {doctypeMaifUser, doctypeContrat, doctypeHome, doctypeFoyer, doctypeModalitesPaiement, doctypeSinistreHabitation, doctypeSinistreVehicule, doctypeSocietaire}
 
