@@ -62418,8 +62418,7 @@ const Contrat = imp.doctypeContrat
 const Home = imp.doctypeHome
 const Foyer = imp.doctypeFoyer
 const ModalitesPaiement = imp.doctypeModalitesPaiement
-const SinistreHabitation = imp.doctypeSinistreHabitation
-const SinistreVehicule = imp.doctypeSinistreVehicule
+const Sinistre = imp.doctypeSinistre
 const Societaire = imp.doctypeSocietaire
 
 const connectUrl = 'https://connect.maif.fr/connect'
@@ -62478,15 +62477,14 @@ module.exports = baseKonnector.createNew({
     'contact'
   ],
 
-  models: [Contrat, Home, Foyer, ModalitesPaiement, SinistreHabitation, SinistreVehicule, Societaire],
+  models: [Contrat, Home, Foyer, ModalitesPaiement, Sinistre, Societaire],
   fetchOperations: [
     tryntimes,
     updateOrCreate(logger, Contrat, ['societaire']),
     updateOrCreate(logger, Home, ['name']),
     updateOrCreate(logger, Foyer, ['name']),
     updateOrCreate(logger, ModalitesPaiement, ['societaire']),
-    updateOrCreate(logger, SinistreHabitation, ['timestamp']),
-    updateOrCreate(logger, SinistreVehicule, ['timestamp']),
+    updateOrCreate(logger, Sinistre, ['timestamp']),
     updateOrCreate(logger, Societaire, ['email'])
   ]
 })
@@ -62641,27 +62639,11 @@ function fetchData (requiredFields, entries, data, next) {
     entries.paymenttermss = []
     entries.paymenttermss.push({'paymentterms': body['MesInfos'].paymentTerms})
 
-    // Ajout data SinistreHabitation & SinistreVehicule
-    var sinistres = body['MesInfos'].insuranceClaim
+    // Ajout data Sinistre
+    let sinistres = body['MesInfos'].insuranceClaim
     sinistres = sortByDate(sinistres)
-    entries.sinistrevehicules = []
-    entries.sinistrehabitations = []
-    var sinistrevehicules = []
-    var sinistrehabitations = []
-
-    // Parcours des sinistres
-    for (var i = 0; i < sinistres.length; i++) {
-      // Si immatriculationVehicule ==> sinistre VAM
-      if (sinistres[i]['immatriculationVehicule'] !== undefined && sinistres[i]['immatriculationVehicule'] !== '') {
-        sinistrevehicules.push(sinistres[i])
-      // Sinon ==> sinistre RAQVAM
-      } else {
-        sinistrehabitations.push(sinistres[i])
-      }
-    }
-
-    entries.sinistrevehicules.push({'sinistrevehicules': sinistrevehicules})
-    entries.sinistrehabitations.push({'sinistrehabitations': sinistrehabitations})
+    entries.sinistres = []
+    entries.sinistres.push({'sinistre': sinistres})
 
     // Ajout data Societaire
     entries.societaires = []
@@ -62820,44 +62802,14 @@ const doctypeModalitesPaiement = models.baseModel.createNew({
   'vendor': 'maif'
 })
 
-const doctypeSinistreHabitation = models.baseModel.createNew({
-  'displayName': 'sinistrehabitation',
-  'docType': 'fr.maif.maifuser.sinistrehabitation',
-  'name': 'fr.maif.maifuser.sinistrehabitation',
-  'docTypeVersion': 'MaifKonnector-0.0.0-draft',
-  'type': 'Habitation',
-  'societaire': '1234567N',
-  'timestamp': '2015-07-20T19:00',
-  'lieuSurvenance': 'LYON 06',
-  'ref': 'F150181177B',
-  'typeLieuSurvenance': 'Agglomération',
-  'natureLieu': 'Appartement',
-  'address': {
-    'street': '2, Boulevard des Belges',
-    'postCode': '6900',
-    'city': 'LYON 06',
-    'country': 'FRANCE'
-  }
+
+const doctypeSinistre = models.baseModel.createNew({
+  'displayName': 'sinistre',
+  'docType': 'fr.maif.maifuser.sinistre',
+  'name': 'fr.maif.maifuser.sinistre',
+  'docTypeVersion': 'MaifKonnector-0.0.0-draft'
 })
 
-const doctypeSinistreVehicule = models.baseModel.createNew({
-  'displayName': 'sinistrevehicule',
-  'docType': 'fr.maif.maifuser.sinistrevehicule',
-  'name': 'fr.maif.maifuser.sinistrevehicule',
-  'docTypeVersion': 'MaifKonnector-0.0.0-draft',
-  'type': 'Vehicule',
-  'societaire': '1234567N',
-  'timestamp': '2015-07-20T19:00',
-  'lieuSurvenance': 'LYON 06',
-  'ref': 'F150181177B',
-  'typeLieuSurvenance': 'Agglomération',
-  'immatriculationVehicule': 'AA-123-XD',
-  'driver': {
-    'prefix': 'Mme',
-    'family': 'Dupond',
-    'given': 'Germaine'
-  }
-})
 
 const doctypeSocietaire = models.baseModel.createNew({
   'displayName': 'societaire',
@@ -62894,7 +62846,7 @@ doctypeMaifUser.getOne = callback =>
       return callback(error, maifusers[0])
     })
 
-module.exports = {doctypeMaifUser, doctypeContrat, doctypeHome, doctypeFoyer, doctypeModalitesPaiement, doctypeSinistreHabitation, doctypeSinistreVehicule, doctypeSocietaire}
+module.exports = {doctypeMaifUser, doctypeContrat, doctypeHome, doctypeFoyer, doctypeModalitesPaiement, doctypeSinistre, doctypeSocietaire}
 
 
 /***/ }),
