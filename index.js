@@ -72586,6 +72586,8 @@ $export($export.G + $export.B + $export.F * MSIE, {
 	var dataProto = {
 	  create: data.create,
 	  find: data.find,
+	  findMany: data.findMany,
+	  findAll: data.findAll,
 	  update: data.update,
 	  delete: data._delete,
 	  updateAttributes: data.updateAttributes,
@@ -72630,7 +72632,7 @@ $export($export.G + $export.B + $export.F * MSIE, {
 	  getDownloadLinkByPath: files.getDownloadLinkByPath,
 	  getArchiveLink: function getArchiveLink() {
 	    (0, _utils.warn)('getArchiveLink is deprecated, use cozy.files.getArchiveLinkByPaths instead.');
-	    return files.getArchiveLink.apply(files, arguments);
+	    return files.getArchiveLinkByPaths.apply(files, arguments);
 	  },
 	  getArchiveLinkByPaths: files.getArchiveLinkByPaths,
 	  getArchiveLinkByIds: files.getArchiveLinkByIds,
@@ -72758,7 +72760,6 @@ $export($export.G + $export.B + $export.F * MSIE, {
 	
 	      // Exposing cozyFetchJSON to make some development easier. Should be temporary.
 	      this.fetchJSON = function _fetchJSON() {
-	        console.warn && console.warn('cozy.client.fetchJSON is a temporary method for development purpose, you should avoid using it.');
 	        var args = [this].concat(Array.prototype.slice.call(arguments));
 	        return cozyFetch.cozyFetchJSON.apply(this, args);
 	      };
@@ -72767,6 +72768,8 @@ $export($export.G + $export.B + $export.F * MSIE, {
 	    key: 'authorize',
 	    value: function authorize() {
 	      var _this = this;
+	
+	      var forceTokenRefresh = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 	
 	      var state = this._authstate;
 	      if (state === AuthOK || state === AuthRunning) {
@@ -72779,7 +72782,7 @@ $export($export.G + $export.B + $export.F * MSIE, {
 	          throw new Error('OAuth is not supported on the V2 stack');
 	        }
 	        if (_this._oauth) {
-	          return auth.oauthFlow(_this, _this._storage, _this._clientParams, _this._onRegistered);
+	          return auth.oauthFlow(_this, _this._storage, _this._clientParams, _this._onRegistered, forceTokenRefresh);
 	        }
 	        // we expect to be on a client side application running in a browser
 	        // with cookie-based authentication.
@@ -74068,6 +74071,14 @@ $export($export.G + $export.B + $export.F * MSIE, {
 	// oauthFlow performs the stateful registration and access granting of an OAuth
 	// client.
 	function oauthFlow(cozy, storage, clientParams, onRegistered) {
+	  var ignoreCachedCredentials = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+	
+	  if (ignoreCachedCredentials) {
+	    return storage.clear().then(function () {
+	      return oauthFlow(cozy, storage, clientParams, onRegistered, false);
+	    });
+	  }
+	
 	  var tryCount = 0;
 	
 	  function clearAndRetry(err) {
@@ -74506,6 +74517,8 @@ $export($export.G + $export.B + $export.F * MSIE, {
 	});
 	exports.create = create;
 	exports.find = find;
+	exports.findMany = findMany;
+	exports.findAll = findAll;
 	exports.changesFeed = changesFeed;
 	exports.update = update;
 	exports.updateAttributes = updateAttributes;
@@ -74553,6 +74566,146 @@ $export($export.G + $export.B + $export.F * MSIE, {
 	      } else {
 	        return resp;
 	      }
+	    });
+	  });
+	}
+	
+	function findMany(cozy, doctype, ids) {
+	  if (!(ids instanceof Array)) {
+	    return Promise.reject(new Error('Parameter ids must be a non-empty array'));
+	  }
+	  if (ids.length === 0) {
+	    // So users don't need to be defensive regarding the array content.
+	    // This should not hide issues in user code since the result will be an
+	    // empty object anyway.
+	    return Promise.resolve({});
+	  }
+	
+	  return cozy.isV2().then(function (isV2) {
+	    if (isV2) {
+	      return Promise.reject(new Error('findMany is not available on v2'));
+	    }
+	
+	    var path = (0, _utils.createPath)(cozy, isV2, doctype, '_all_docs', { include_docs: true });
+	
+	    return (0, _fetch.cozyFetchJSON)(cozy, 'POST', path, { keys: ids }).then(function (resp) {
+	      var docs = {};
+	
+	      var _iteratorNormalCompletion = true;
+	      var _didIteratorError = false;
+	      var _iteratorError = undefined;
+	
+	      try {
+	        for (var _iterator = resp.rows[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	          var row = _step.value;
+	          var key = row.key,
+	              doc = row.doc,
+	              error = row.error;
+	
+	          docs[key] = error ? { error: error } : { doc: doc };
+	        }
+	      } catch (err) {
+	        _didIteratorError = true;
+	        _iteratorError = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion && _iterator.return) {
+	            _iterator.return();
+	          }
+	        } finally {
+	          if (_didIteratorError) {
+	            throw _iteratorError;
+	          }
+	        }
+	      }
+	
+	      return docs;
+	    }).catch(function (error) {
+	      if (error.status !== 404) return Promise.reject(error);
+	
+	      // When no doc was ever created and the database does not exist yet,
+	      // the response will be a 404 error.
+	      var docs = {};
+	
+	      var _iteratorNormalCompletion2 = true;
+	      var _didIteratorError2 = false;
+	      var _iteratorError2 = undefined;
+	
+	      try {
+	        for (var _iterator2 = ids[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	          var id = _step2.value;
+	
+	          docs[id] = { error: error };
+	        }
+	      } catch (err) {
+	        _didIteratorError2 = true;
+	        _iteratorError2 = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	            _iterator2.return();
+	          }
+	        } finally {
+	          if (_didIteratorError2) {
+	            throw _iteratorError2;
+	          }
+	        }
+	      }
+	
+	      return docs;
+	    });
+	  });
+	}
+	
+	function findAll(cozy, doctype) {
+	  return cozy.isV2().then(function (isV2) {
+	    if (isV2) {
+	      return Promise.reject(new Error('findAll is not available on v2'));
+	    }
+	
+	    var path = (0, _utils.createPath)(cozy, isV2, doctype, '_all_docs', { include_docs: true });
+	
+	    return (0, _fetch.cozyFetchJSON)(cozy, 'POST', path, {}).then(function (resp) {
+	      var result = {};
+	      result.docs = [];
+	
+	      var _iteratorNormalCompletion3 = true;
+	      var _didIteratorError3 = false;
+	      var _iteratorError3 = undefined;
+	
+	      try {
+	        for (var _iterator3 = resp.rows[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	          var row = _step3.value;
+	          var doc = row.doc;
+	
+	          result.docs.push(doc);
+	        }
+	      } catch (err) {
+	        _didIteratorError3 = true;
+	        _iteratorError3 = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion3 && _iterator3.return) {
+	            _iterator3.return();
+	          }
+	        } finally {
+	          if (_didIteratorError3) {
+	            throw _iteratorError3;
+	          }
+	        }
+	      }
+	
+	      return result;
+	    }).catch(function (error) {
+	      if (error.status !== 404) return Promise.reject(error);
+	
+	      // When no doc was ever created and the database does not exist yet,
+	      // the response will be a 404 error.
+	
+	      var result = {};
+	      result.error = error;
+	
+	      return result;
 	    });
 	  });
 	}
@@ -74784,7 +74937,23 @@ $export($export.G + $export.B + $export.F * MSIE, {
 	  var path = (0, _utils.createPath)(cozy, false, doctype, '_index');
 	  var indexDefinition = { 'index': { fields: fields } };
 	  return (0, _fetch.cozyFetchJSON)(cozy, 'POST', path, indexDefinition).then(function (response) {
-	    return { doctype: doctype, type: 'mango', name: response.id, fields: fields };
+	    var indexResult = { doctype: doctype, type: 'mango', name: response.id, fields: fields };
+	    var opts = getV3Options(indexResult, { 'selector': { _id: { '$gt': null } } });
+	    var path = (0, _utils.createPath)(cozy, false, indexResult.doctype, '_find');
+	    return (0, _fetch.cozyFetchJSON)(cozy, 'POST', path, opts).then(function () {
+	      return indexResult;
+	    }).catch(function () {
+	      // one retry
+	      return (0, _utils.sleep)(1000).then(function () {
+	        return (0, _fetch.cozyFetchJSON)(cozy, 'POST', path, opts);
+	      }).then(function () {
+	        return indexResult;
+	      }).catch(function () {
+	        return (0, _utils.sleep)(500).then(function () {
+	          return indexResult;
+	        });
+	      });
+	    });
 	  });
 	}
 	
@@ -74828,7 +74997,8 @@ $export($export.G + $export.B + $export.F * MSIE, {
 	    selector: options.selector,
 	    limit: options.limit,
 	    skip: options.skip,
-	    since: options.since
+	    since: options.since,
+	    sort: options.sort
 	  };
 	
 	  if (options.descending) {
@@ -75370,8 +75540,15 @@ $export($export.G + $export.B + $export.F * MSIE, {
 	  return (0, _fetch.cozyFetchJSON)(cozy, 'POST', '/files/trash/' + encodeURIComponent(id));
 	}
 	
-	function destroyById(cozy, id) {
-	  return (0, _fetch.cozyFetchJSON)(cozy, 'DELETE', '/files/trash/' + encodeURIComponent(id));
+	function destroyById(cozy, id, options) {
+	  var _ref8 = options || {},
+	      ifMatch = _ref8.ifMatch;
+	
+	  return (0, _fetch.cozyFetchJSON)(cozy, 'DELETE', '/files/trash/' + encodeURIComponent(id), undefined, {
+	    headers: {
+	      'If-Match': ifMatch || ''
+	    }
+	  });
 	}
 	
 	function addIsDir(obj) {
@@ -75468,7 +75645,7 @@ $export($export.G + $export.B + $export.F * MSIE, {
 	}();
 	
 	// inject iframe for service in given element
-	function injectService(url, element, intent, data) {
+	function injectService(url, element, intent, data, onReadyCallback) {
 	  var document = element.ownerDocument;
 	  if (!document) throw new Error('Cannot retrieve document object from given element');
 	
@@ -75476,6 +75653,8 @@ $export($export.G + $export.B + $export.F * MSIE, {
 	  if (!window) throw new Error('Cannot retrieve window object from document');
 	
 	  var iframe = document.createElement('iframe');
+	  // if callback provided for when iframe is loaded
+	  if (typeof onReadyCallback === 'function') iframe.onload = onReadyCallback;
 	  iframe.setAttribute('src', url);
 	  iframe.classList.add(intentClass);
 	  element.appendChild(iframe);
@@ -75488,13 +75667,37 @@ $export($export.G + $export.B + $export.F * MSIE, {
 	    var messageHandler = function messageHandler(event) {
 	      if (event.origin !== serviceOrigin) return;
 	
+	      if (event.data.type === 'load') {
+	        // Safari 9.1 (At least) send a MessageEvent when the iframe loads,
+	        // making the handshake fails.
+	        console.warn && console.warn('Cozy Client ignored MessageEvent having data.type `load`.');
+	        return;
+	      }
+	
 	      if (event.data.type === 'intent-' + intent._id + ':ready') {
 	        handshaken = true;
 	        return event.source.postMessage(data, event.origin);
 	      }
 	
+	      if (handshaken && event.data.type === 'intent-' + intent._id + ':resize') {
+	        ['width', 'height', 'maxWidth', 'maxHeight'].forEach(function (prop) {
+	          if (event.data.transition) element.style.transition = event.data.transition;
+	          if (event.data.dimensions[prop]) element.style[prop] = event.data.dimensions[prop] + 'px';
+	        });
+	
+	        return true;
+	      }
+	
 	      window.removeEventListener('message', messageHandler);
-	      iframe.parentNode.removeChild(iframe);
+	      var removeIntentFrame = function removeIntentFrame() {
+	        iframe.parentNode.removeChild(iframe);
+	      };
+	
+	      if (handshaken && event.data.type === 'intent-' + intent._id + ':exposeFrameRemoval') {
+	        return resolve({ removeIntentFrame: removeIntentFrame, doc: event.data.document });
+	      }
+	
+	      removeIntentFrame();
 	
 	      if (event.data.type === 'intent-' + intent._id + ':error') {
 	        return reject(errorSerializer.deserialize(event.data.error));
@@ -75543,7 +75746,7 @@ $export($export.G + $export.B + $export.F * MSIE, {
 	    }
 	  });
 	
-	  createPromise.start = function (element) {
+	  createPromise.start = function (element, onReadyCallback) {
 	    return createPromise.then(function (intent) {
 	      var service = intent.attributes.services && intent.attributes.services[0];
 	
@@ -75551,7 +75754,7 @@ $export($export.G + $export.B + $export.F * MSIE, {
 	        return Promise.reject(new Error('Unable to find a service'));
 	      }
 	
-	      return injectService(service.href, element, intent, data);
+	      return injectService(service.href, element, intent, data, onReadyCallback);
 	    });
 	  };
 	
@@ -75591,6 +75794,22 @@ $export($export.G + $export.B + $export.F * MSIE, {
 	      serviceWindow.parent.postMessage(message, intent.attributes.client);
 	    };
 	
+	    var resizeClient = function resizeClient(dimensions, transitionProperty) {
+	      if (terminated) throw new Error('Intent service has been terminated');
+	
+	      var message = {
+	        type: 'intent-' + intent._id + ':resize',
+	        // if a dom element is passed, calculate its size
+	        dimensions: dimensions.element ? Object.assign({}, dimensions, {
+	          maxHeight: dimensions.element.clientHeight,
+	          maxWidth: dimensions.element.clientWidth
+	        }) : dimensions,
+	        transition: transitionProperty
+	      };
+	
+	      serviceWindow.parent.postMessage(message, intent.attributes.client);
+	    };
+	
 	    var cancel = function cancel() {
 	      _terminate({ type: 'intent-' + intent._id + ':cancel' });
 	    };
@@ -75610,10 +75829,17 @@ $export($export.G + $export.B + $export.F * MSIE, {
 	          return intent;
 	        },
 	        terminate: function terminate(doc) {
-	          return _terminate({
-	            type: 'intent-' + intent._id + ':done',
-	            document: doc
-	          });
+	          if (data && data.exposeIntentFrameRemoval) {
+	            return _terminate({
+	              type: 'intent-' + intent._id + ':exposeFrameRemoval',
+	              document: doc
+	            });
+	          } else {
+	            return _terminate({
+	              type: 'intent-' + intent._id + ':done',
+	              document: doc
+	            });
+	          }
 	        },
 	        throw: function _throw(error) {
 	          return _terminate({
@@ -75621,6 +75847,7 @@ $export($export.G + $export.B + $export.F * MSIE, {
 	            error: errorSerializer.serialize(error)
 	          });
 	        },
+	        resizeClient: resizeClient,
 	        cancel: cancel
 	      };
 	    });
@@ -76073,7 +76300,8 @@ $export($export.G + $export.B + $export.F * MSIE, {
 	  var params = Object.keys(options).map(function (key) {
 	    return '&page[' + key + ']=' + options[key];
 	  }).join('');
-	  return (0, _fetch.cozyFetchRawJSON)(cozy, 'GET', makeReferencesPath(doc) + '?include=files' + params);
+	  // As datetime is the only sort option available, I see no reason to not have it by default
+	  return (0, _fetch.cozyFetchRawJSON)(cozy, 'GET', makeReferencesPath(doc) + '?include=files&sort=datetime' + params);
 	}
 	
 	function makeReferencesPath(doc) {
@@ -76155,7 +76383,7 @@ module.exports = {
               resolve(account)
             })
             .catch(err => {
-              log('error', `error while getting the folder path from ID : "${cozyFields.folderPath}"`)
+              log('error', `error while getting the folder path from ID : "${folderId}"`)
               log('error', err.message)
               reject(new Error('NOT_EXISTING_DIRECTORY'))
             })
@@ -76229,6 +76457,15 @@ module.exports = {
       let result = null
       if (fixture[index.doctype]) {
         result = fixture[index.doctype]
+      } else {
+        result = []
+      }
+      return Promise.resolve(result)
+    },
+    findAll (doctype) {
+      let result = null
+      if (fixture[doctype]) {
+        result = fixture[doctype]
       } else {
         result = []
       }
@@ -76366,8 +76603,7 @@ module.exports = {
   createNew (model) {
     return _.assignIn(model, {
       all (callback) {
-        cozyClient.data.defineIndex(model.name, ['_id'])
-        .then(index => cozyClient.data.query(index, {'selector': {_id: {'$gt': null}}}))
+        cozyClient.data.findAll(model.name)
         .then(models => callback(null, models))
         .catch(err => callback(err))
       },
