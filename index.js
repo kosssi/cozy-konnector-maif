@@ -63590,7 +63590,8 @@ function buildCallbackUrl (requiredFields, callback) {
  * We convert it here
  */
 function convert128ToEuro (s) {
-  return s.replace(/\u0080/, '€')
+  if (s && typeof s.replace === 'function') s = s.replace(/\u0080/, '€')
+  return s
 }
 
 function cleanHomeData (homeData) {
@@ -63638,7 +63639,7 @@ function fetchData (requiredFields, entries, data, next) {
 
     // Ajout data Home
     entries.homes = []
-    entries.homes.push({'home': body['MesInfos'].home.map(cleanHomeData) })
+    entries.homes.push({'home': body['MesInfos'].home.map(cleanHomeData)})
 
     // Ajout data Foyer
     entries.foyers = []
