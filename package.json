@@ -10,7 +10,7 @@
   "author": "",
   "license": "AGPL-3.0",
   "dependencies": {
-    "cozy-konnector-libs": "3.2.5"
+    "cozy-konnector-libs": "3.3.0"
   },
   "scripts": {
     "test": "jest",
@@ -30,6 +30,6 @@
     "git-directory-deploy": "1.5.1",
     "jest": "22.2.2",
     "standard": "10.0.3",
-    "webpack": "3.11.0"
+    "webpack": "3.10.0"
   }
 }
